@@ -153,7 +153,7 @@ export type WhereConditions <T> = {
  * Schema field which contains only a native type.
  */
 export type SimpleSchemaField = Enums.SchemaType.Number | Enums.SchemaType.String
-  | Enums.SchemaType.Boolean | Enums.SchemaType.Date;
+  | Enums.SchemaType.Boolean | Enums.SchemaType.Date | Enums.SchemaType.Object;
 
 /**
  * Base interface for all complex fields - field which is described by an object.

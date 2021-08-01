@@ -322,6 +322,10 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
       return new Date(fieldValue);
     }
 
+    if (schemaField === Enums.SchemaType.Object) {
+      return fieldValue;
+    }
+
     throw new Error(`SchemaService.transofrmBaseField: Unknown schema type: ${JSON.stringify(schemaField)}`);
   }
 

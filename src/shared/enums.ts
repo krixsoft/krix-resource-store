@@ -19,6 +19,7 @@ export enum SchemaType {
   String = 1,
   Boolean = 2,
   Date = 3,
-  Computed = 4,
-  Relation = 5,
+  Object = 4,
+  Computed = 5,
+  Relation = 6,
 }
