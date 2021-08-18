@@ -133,4 +133,135 @@ describe(`KxModule`, () => {
     });
   });
 
+  describe(`Schema - Simple fields`, () => {
+    it(`should allow to inject resource with simple "Number" field`, () => {
+      interface User {
+        age: number;
+      }
+      class UserResourceStore extends ResourceStore<User> {
+        public name = 'user';
+
+        public schema: Interfaces.Schema<User> = {
+          age: Enums.SchemaType.Number,
+        };
+      }
+      const userResourceStore = new UserResourceStore();
+      const user = {
+        id: 1,
+        age: 26,
+      };
+      const injectedUser = userResourceStore.inject(user);
+      expect(injectedUser.age).to.be.equal(user.age);
+    });
+
+    it(`should allow to inject resource with simple "String" field`, () => {
+      interface User {
+        name: string;
+      }
+      class UserResourceStore extends ResourceStore<User> {
+        public name = 'user';
+
+        public schema: Interfaces.Schema<User> = {
+          name: Enums.SchemaType.String,
+        };
+      }
+      const userResourceStore = new UserResourceStore();
+      const user = {
+        id: 1,
+        name: `Andrey`,
+      };
+      const injectedUser = userResourceStore.inject(user);
+
+      expect(injectedUser.name).to.be.equal(user.name);
+    });
+
+    it(`should allow to inject resource with simple "Boolean" field`, () => {
+      interface User {
+        hasHome: boolean;
+      }
+      class UserResourceStore extends ResourceStore<User> {
+        public name = 'user';
+
+        public schema: Interfaces.Schema<User> = {
+          hasHome: Enums.SchemaType.Boolean,
+        };
+      }
+      const userResourceStore = new UserResourceStore();
+      const user = {
+        id: 1,
+        hasHome: true,
+      };
+      const injectedUser = userResourceStore.inject(user);
+
+      expect(injectedUser.hasHome).to.be.equal(user.hasHome);
+    });
+
+    it(`should allow to inject resource with simple "Date" field (date in ISO format as "string")`, () => {
+      interface User {
+        birthday: Date;
+      }
+      class UserResourceStore extends ResourceStore<User> {
+        public name = 'user';
+
+        public schema: Interfaces.Schema<User> = {
+          birthday: Enums.SchemaType.Date,
+        };
+      }
+      const userResourceStore = new UserResourceStore();
+      const user = {
+        id: 1,
+        birthday: `2021-08-18T22:25:12.581Z`,
+      } as any as User;
+      const injectedUser = userResourceStore.inject(user);
+
+      expect(injectedUser.birthday).to.be.an.instanceOf(Date);
+      expect(injectedUser.birthday.toISOString()).to.be.equal(user.birthday);
+    });
+
+    it(`should allow to inject resource with simple "Date" field (date as "Date" object)`, () => {
+      interface User {
+        birthday: Date;
+      }
+      class UserResourceStore extends ResourceStore<User> {
+        public name = 'user';
+
+        public schema: Interfaces.Schema<User> = {
+          birthday: Enums.SchemaType.Date,
+        };
+      }
+      const userResourceStore = new UserResourceStore();
+      const isoString = `2021-08-18T22:25:12.581Z`;
+      const user = {
+        id: 1,
+        birthday: new Date(isoString),
+      };
+      const injectedUser = userResourceStore.inject(user);
+
+      expect(injectedUser.birthday).to.be.an.instanceOf(Date);
+      expect(injectedUser.birthday.toISOString()).to.be.equal((new Date(isoString)).toISOString());
+    });
+
+    it(`should allow to inject resource with simple "Object" field`, () => {
+      interface User {
+        metainfo: object;
+      }
+      class UserResourceStore extends ResourceStore<User> {
+        public name = 'user';
+
+        public schema: Interfaces.Schema<User> = {
+          metainfo: Enums.SchemaType.Object,
+        };
+      }
+      const userResourceStore = new UserResourceStore();
+      const user = {
+        id: 1,
+        metainfo: { role: 5 },
+      };
+      const injectedUser = userResourceStore.inject(user);
+
+      expect(injectedUser.metainfo).to.be.equal(user.metainfo);
+    });
+
+  });
+
 });
