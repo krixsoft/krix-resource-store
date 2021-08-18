@@ -253,7 +253,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
     const resourceBySchema: any = {};
     /* eslint-disable guard-for-in */
     for (const fieldName in this.schema) {
-      const schemaField: Interfaces.SchemaField = this.schema[fieldName];
+      const schemaField: Interfaces.SchemaField<ResourceType> = this.schema[fieldName];
 
       if (typeof schemaField !== 'object') {
         const fieldValue = resource[fieldName];

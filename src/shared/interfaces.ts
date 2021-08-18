@@ -172,9 +172,9 @@ export interface NativeComplexSchemaField extends BaseComplexSchemaField {
  * Every computed field will be set as `getter` in every resource `object`. If computed field is called,
  * getter will call the `compute` method from settings.
  */
-export interface ComputedSchemaField extends BaseComplexSchemaField {
+export interface ComputedSchemaField <ResourceType> extends BaseComplexSchemaField {
   type: Enums.SchemaType.Computed;
-  compute: (resource: any) => any;
+  compute: (resource: ResourceType) => any;
 }
 /**
  * Examples:
@@ -235,12 +235,12 @@ export interface RelationBelongsToSchemaField extends BaseComplexSchemaField {
   sourceProperty: string;
 }
 
-export type SchemaField = SimpleSchemaField | NativeComplexSchemaField
-  | ComputedSchemaField | RelationHasSchemaField | RelationBelongsToSchemaField;
+export type SchemaField <ResourceType> = SimpleSchemaField | NativeComplexSchemaField
+  | ComputedSchemaField<ResourceType> | RelationHasSchemaField | RelationBelongsToSchemaField;
 
-export type Schema <T> = {
+export type Schema <ResourceType> = {
   /**
    * The description of a resource column for model
    */
-  [P in keyof T]: SchemaField;
+  [P in keyof ResourceType]: SchemaField <ResourceType>;
 };
