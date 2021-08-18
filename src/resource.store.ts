@@ -306,6 +306,10 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
     schemaField: Interfaces.SimpleSchemaField,
     fieldValue: any,
   ): number|string|boolean|Date|null|undefined {
+    if (Helper.isNil(fieldValue) === true) {
+      return fieldValue;
+    }
+
     if (schemaField === Enums.SchemaType.Number) {
       return Number(fieldValue);
     }
