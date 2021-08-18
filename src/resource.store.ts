@@ -254,15 +254,16 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
     /* eslint-disable guard-for-in */
     for (const fieldName in this.schema) {
       const schemaField: Interfaces.SchemaField = this.schema[fieldName];
-      const fieldValue = resource[fieldName];
 
       if (typeof schemaField !== 'object') {
+        const fieldValue = resource[fieldName];
         const transformedFieldValue = this.transofrmValueToSimpleField(schemaField, fieldValue);
         resourceBySchema[fieldName] = transformedFieldValue;
         continue;
       }
 
       if (schemaField.type !== Enums.SchemaType.Computed && schemaField.type !== Enums.SchemaType.Relation) {
+        const fieldValue = resource[fieldName];
         const transformedFieldValue = this.transofrmValueToSimpleField(schemaField.type, fieldValue);
         resourceBySchema[fieldName] = transformedFieldValue;
         continue;
