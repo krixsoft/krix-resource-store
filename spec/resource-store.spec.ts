@@ -813,5 +813,157 @@ describe(`KxModule`, () => {
         expect(user.role).to.be.equal(role);
       });
     });
+
+    describe(`BelongsToMany`, () => {
+      interface UserWithFriends {
+        id: number;
+        friendsIds: number[];
+        friends?: UserWithFriends[];
+      }
+      class UserWithFriendsResourceStore extends ResourceStore<UserWithFriends> {
+        public name = 'userWithFriends';
+
+        public schema: Interfaces.Schema<UserWithFriends> = {
+          id: Enums.SchemaType.Number,
+          friendsIds: Enums.SchemaType.Object,
+          friends: {
+            type: Enums.SchemaType.Relation,
+            relation: Enums.RelationType.BelongsToMany,
+            sourceProperty: 'friendsIds',
+            resource: 'userWithFriends',
+          },
+        };
+      }
+      let userWithFriendsResourceStore: UserWithFriendsResourceStore;
+
+      interface Role {
+        id: number;
+        name: string;
+      }
+      class RoleStore extends ResourceStore<Role> {
+        public name = 'role';
+
+        public schema: Interfaces.Schema<Role> = {
+          id: Enums.SchemaType.Number,
+          name: Enums.SchemaType.String,
+        };
+      }
+      let roleStore: RoleStore;
+
+      interface UserWithRoles {
+        id: number;
+        rolesIds: number[];
+        roles?: UserWithRoles[];
+      }
+      class UserWithRolesResourceStore extends ResourceStore<UserWithRoles> {
+        public name = 'userWithRoles';
+
+        public schema: Interfaces.Schema<UserWithRoles> = {
+          id: Enums.SchemaType.Number,
+          rolesIds: Enums.SchemaType.Object,
+          roles: {
+            type: Enums.SchemaType.Relation,
+            relation: Enums.RelationType.BelongsToMany,
+            sourceProperty: 'rolesIds',
+            resource: 'role',
+          },
+        };
+      }
+      let userWithRolesResourceStore: UserWithRolesResourceStore;
+
+      const relationMap = new Map();
+
+      beforeEach(() => {
+        relationMap.clear();
+
+        userWithFriendsResourceStore = new UserWithFriendsResourceStore();
+        relationMap.set(userWithFriendsResourceStore.name, userWithFriendsResourceStore);
+        userWithFriendsResourceStore.relationMap = relationMap;
+
+        roleStore = new RoleStore();
+        relationMap.set(roleStore.name, roleStore);
+        roleStore.relationMap = relationMap;
+
+        userWithRolesResourceStore = new UserWithRolesResourceStore();
+        relationMap.set(userWithRolesResourceStore.name, userWithRolesResourceStore);
+        userWithRolesResourceStore.relationMap = relationMap;
+      });
+
+      it(`should return empty array if source field contains "nil" value`, () => {
+        const user = userWithFriendsResourceStore.inject({
+          id: 1,
+          friendsIds: null,
+        });
+
+        expect(user.friends).to.be.an('array').that.is.empty;
+      });
+
+      it(`should return empty array if source field contains empty array of ids`, () => {
+        const user = userWithFriendsResourceStore.inject({
+          id: 1,
+          friendsIds: [],
+        });
+
+        expect(user.friends).to.be.an('array').that.is.empty;
+      });
+
+      it(`should return empty array if relations not found in the related store for one store`, () => {
+        const user = userWithFriendsResourceStore.inject({
+          id: 1,
+          friendsIds: [ 3, 2 ],
+        });
+
+        expect(user.friends).to.be.an('array').that.is.empty;
+      });
+
+      it(`should return related resources (link to resources) for one store`, () => {
+        const user1 = userWithFriendsResourceStore.inject({
+          id: 1,
+          friendsIds: [ 3, 2 ],
+        });
+        const user2 = userWithFriendsResourceStore.inject({
+          id: 2,
+          friendsIds: [],
+        });
+        const user3 = userWithFriendsResourceStore.inject({
+          id: 3,
+          friendsIds: [],
+        });
+
+        const friends = user1.friends;
+        expect(friends).to.have.lengthOf(2);
+        expect(friends).to.include(user2);
+        expect(friends).to.include(user3);
+      });
+
+      it(`should return empty array if relation not found in the related store for two stores`, () => {
+        const user = userWithRolesResourceStore.inject({
+          id: 2,
+          rolesIds: [ 1 ],
+        });
+
+        expect(user.roles).to.be.an('array').that.is.empty;
+      });
+
+      it(`should return related resources (link to resources) for two stores`, () => {
+        const role1 = roleStore.inject({
+          id: 1,
+          name: 'Admin',
+        });
+        const role2 = roleStore.inject({
+          id: 2,
+          name: 'Guest',
+        });
+        const user1 = userWithRolesResourceStore.inject({
+          id: 1,
+          rolesIds: [ 1, 2 ],
+        });
+
+        const roles = user1.roles;
+        expect(roles).to.have.lengthOf(2);
+        expect(roles).to.include(role1);
+        expect(roles).to.include(role2);
+      });
+    });
   });
 });
