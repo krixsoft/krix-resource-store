@@ -16,10 +16,10 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
    */
   public abstract readonly schema: Interfaces.Schema<ResourceType>;
   /**
-   * Contains all registered resource stores.
+   * Contains all registered resource stores for `relation` logic.
    * FYI: This structure is managed by external provider.
    */
-  protected resourceStoreMap: Map<string, ResourceStore<any>>;
+  public relationMap: Map<string, ResourceStore<any>>;
 
   private store: ResourceType[];
 
@@ -345,16 +345,16 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
     sourceResource: ResourceType,
     includeField: Interfaces.RelationBelongsToSchemaField | Interfaces.RelationHasSchemaField,
   ): TargetResourceType|TargetResourceType[] {
-    if (Helper.isNil(this.resourceStoreMap) === true) {
-      throw new Error(`ResourceStore.getIncludeValue: Something went wrong. `
+    if (Helper.isNil(this.relationMap) === true) {
+      throw new Error(`ResourceStore.getIncludeValue: `
         + `We can't find a map with resource stores in the resource store (${this.name}).`);
     }
 
-    const resourceStore = this.resourceStoreMap.get(includeField.resource);
+    const resourceStore = this.relationMap.get(includeField.resource);
 
     if (Helper.isNil(resourceStore) === true) {
-      throw new Error(`ResourceStore.getIncludeValue: Something went wrong. `
-        + `We can't find the resource store (${includeField.resource}).`);
+      throw new Error(`ResourceStore.getIncludeValue: `
+        + `We can't find the resource store (${includeField.resource}) in relation map.`);
     }
 
     switch (includeField.relation) {
