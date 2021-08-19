@@ -343,7 +343,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
    */
   private getRelatedValue <TargetResourceType = any> (
     sourceResource: ResourceType,
-    includeField: Interfaces.RelationBelongsToSchemaField | Interfaces.RelationHasSchemaField,
+    includeField: Interfaces.RelationBelongsToSchemaField<ResourceType> | Interfaces.RelationHasSchemaField,
   ): TargetResourceType|TargetResourceType[] {
     if (Helper.isNil(this.relationMap) === true) {
       throw new Error(`ResourceStore.getIncludeValue: `
