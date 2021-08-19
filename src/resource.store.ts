@@ -369,6 +369,10 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
       }
       case Enums.RelationType.BelongsToMany: {
         const includeResourceIds: string[] = sourceResource[includeField.sourceProperty];
+        if (Helper.isArray(includeResourceIds) === false || Helper.isEmpty(includeResourceIds)) {
+          return [];
+        }
+
         const includeResources = resourceStore.findAll({
           id: {
             'in': includeResourceIds,
