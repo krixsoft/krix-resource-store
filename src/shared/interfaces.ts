@@ -228,15 +228,15 @@ export interface RelationHasSchemaField extends BaseComplexSchemaField {
  * FYI[WARN]: This logic is very expensive because uses `Nested Loops Join` algorithm.
  * http://dcx.sap.com/1101/en/dbusage_en11/join-methods-optimizer-queryopt.html
  */
-export interface RelationBelongsToSchemaField extends BaseComplexSchemaField {
+export interface RelationBelongsToSchemaField <ResourceType> extends BaseComplexSchemaField {
   type: Enums.SchemaType.Relation;
   relation: Enums.RelationType.BelongsToMany | Enums.RelationType.BelongsToOne;
   resource: string;
-  sourceProperty: string;
+  sourceProperty: keyof ResourceType;
 }
 
 export type SchemaField <ResourceType> = SimpleSchemaField | NativeComplexSchemaField
-  | ComputedSchemaField<ResourceType> | RelationHasSchemaField | RelationBelongsToSchemaField;
+  | ComputedSchemaField<ResourceType> | RelationHasSchemaField | RelationBelongsToSchemaField<ResourceType>;
 
 export type Schema <ResourceType> = {
   /**
