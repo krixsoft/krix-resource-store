@@ -605,33 +605,82 @@ describe(`KxModule`, () => {
     });
 
     describe(`BelongsToOne`, () => {
+      interface UserWithFriend {
+        id: number;
+        friendId: number;
+        friend?: UserWithFriend;
+      }
+      class UserWithFriendResourceStore extends ResourceStore<UserWithFriend> {
+        public name = 'userWithFriend';
+
+        public schema: Interfaces.Schema<UserWithFriend> = {
+          id: Enums.SchemaType.Number,
+          friendId: Enums.SchemaType.Number,
+          friend: {
+            type: Enums.SchemaType.Relation,
+            relation: Enums.RelationType.BelongsToOne,
+            sourceProperty: 'friendId',
+            resource: 'userWithFriend',
+          },
+        };
+      }
+      let userWithFriendResourceStore: UserWithFriendResourceStore;
+
+      interface Role {
+        id: number;
+        name: string;
+      }
+      class RoleStore extends ResourceStore<Role> {
+        public name = 'role';
+
+        public schema: Interfaces.Schema<Role> = {
+          id: Enums.SchemaType.Number,
+          name: Enums.SchemaType.String,
+        };
+      }
+      let roleStore: RoleStore;
+
+      interface UserWithRole {
+        id: number;
+        roleId: number;
+        role?: UserWithRole;
+      }
+      class UserWithRoleResourceStore extends ResourceStore<UserWithRole> {
+        public name = 'userWithRole';
+
+        public schema: Interfaces.Schema<UserWithRole> = {
+          id: Enums.SchemaType.Number,
+          roleId: Enums.SchemaType.Number,
+          role: {
+            type: Enums.SchemaType.Relation,
+            relation: Enums.RelationType.BelongsToOne,
+            sourceProperty: 'roleId',
+            resource: 'role',
+          },
+        };
+      }
+      let userWithRoleResourceStore: UserWithRoleResourceStore;
+
+      const relationMap = new Map();
+
+      beforeEach(() => {
+        relationMap.clear();
+
+        userWithFriendResourceStore = new UserWithFriendResourceStore();
+        relationMap.set(userWithFriendResourceStore.name, userWithFriendResourceStore);
+        userWithFriendResourceStore.relationMap = relationMap;
+
+        roleStore = new RoleStore();
+        relationMap.set(roleStore.name, roleStore);
+        roleStore.relationMap = relationMap;
+
+        userWithRoleResourceStore = new UserWithRoleResourceStore();
+        relationMap.set(userWithRoleResourceStore.name, userWithRoleResourceStore);
+        userWithRoleResourceStore.relationMap = relationMap;
+      });
 
       it(`should return "null" if source field contains "nil" value`, () => {
-        interface User {
-          id: number;
-          friendId: number;
-          friend?: User;
-        }
-        class UserResourceStore extends ResourceStore<User> {
-          public name = 'user';
-
-          public schema: Interfaces.Schema<User> = {
-            id: Enums.SchemaType.Number,
-            friendId: Enums.SchemaType.Number,
-            friend: {
-              type: Enums.SchemaType.Relation,
-              relation: Enums.RelationType.BelongsToOne,
-              sourceProperty: 'friendId',
-              resource: 'user',
-            },
-          };
-        }
-        const userResourceStore = new UserResourceStore();
-        const relationMap = new Map();
-        relationMap.set(userResourceStore.name, userResourceStore);
-        userResourceStore.relationMap = relationMap;
-
-        const user = userResourceStore.inject({
+        const user = userWithFriendResourceStore.inject({
           id: 1,
           friendId: null,
         });
@@ -640,31 +689,7 @@ describe(`KxModule`, () => {
       });
 
       it(`should return "null" if relation not found in the related store for one store`, () => {
-        interface User {
-          id: number;
-          friendId: number;
-          friend?: User;
-        }
-        class UserResourceStore extends ResourceStore<User> {
-          public name = 'user';
-
-          public schema: Interfaces.Schema<User> = {
-            id: Enums.SchemaType.Number,
-            friendId: Enums.SchemaType.Number,
-            friend: {
-              type: Enums.SchemaType.Relation,
-              relation: Enums.RelationType.BelongsToOne,
-              sourceProperty: 'friendId',
-              resource: 'user',
-            },
-          };
-        }
-        const userResourceStore = new UserResourceStore();
-        const relationMap = new Map();
-        relationMap.set(userResourceStore.name, userResourceStore);
-        userResourceStore.relationMap = relationMap;
-
-        const user = userResourceStore.inject({
+        const user = userWithFriendResourceStore.inject({
           id: 1,
           friendId: 2,
         });
@@ -673,36 +698,12 @@ describe(`KxModule`, () => {
       });
 
       it(`should return related resource (link to resource) for one store`, () => {
-        interface User {
-          id: number;
-          friendId: number;
-          friend?: User;
-        }
-        class UserResourceStore extends ResourceStore<User> {
-          public name = 'user';
-
-          public schema: Interfaces.Schema<User> = {
-            id: Enums.SchemaType.Number,
-            friendId: Enums.SchemaType.Number,
-            friend: {
-              type: Enums.SchemaType.Relation,
-              relation: Enums.RelationType.BelongsToOne,
-              sourceProperty: 'friendId',
-              resource: 'user',
-            },
-          };
-        }
-        const userResourceStore = new UserResourceStore();
-        const relationMap = new Map();
-        relationMap.set(userResourceStore.name, userResourceStore);
-        userResourceStore.relationMap = relationMap;
-
-        const injectedUser1 = userResourceStore.inject({
+        const injectedUser1 = userWithFriendResourceStore.inject({
           id: 1,
           friendId: 2,
         });
 
-        const injectedUser2 = userResourceStore.inject({
+        const injectedUser2 = userWithFriendResourceStore.inject({
           id: 2,
           friendId: null,
         });
@@ -711,47 +712,7 @@ describe(`KxModule`, () => {
       });
 
       it(`should return "null" if relation not found in the related store for two stores`, () => {
-        interface Role {
-          id: number;
-          name: string;
-        }
-        class RoleStore extends ResourceStore<Role> {
-          public name = 'role';
-
-          public schema: Interfaces.Schema<Role> = {
-            id: Enums.SchemaType.Number,
-            name: Enums.SchemaType.String,
-          };
-        }
-        const roleStore = new RoleStore();
-
-        interface User {
-          id: number;
-          roleId: number;
-          role?: User;
-        }
-        class UserResourceStore extends ResourceStore<User> {
-          public name = 'user';
-
-          public schema: Interfaces.Schema<User> = {
-            id: Enums.SchemaType.Number,
-            roleId: Enums.SchemaType.Number,
-            role: {
-              type: Enums.SchemaType.Relation,
-              relation: Enums.RelationType.BelongsToOne,
-              sourceProperty: 'roleId',
-              resource: 'role',
-            },
-          };
-        }
-        const userResourceStore = new UserResourceStore();
-
-        const relationMap = new Map();
-        relationMap.set(userResourceStore.name, userResourceStore);
-        relationMap.set(roleStore.name, roleStore);
-        userResourceStore.relationMap = relationMap;
-
-        const user = userResourceStore.inject({
+        const user = userWithRoleResourceStore.inject({
           id: 2,
           roleId: 1,
         });
@@ -760,52 +721,12 @@ describe(`KxModule`, () => {
       });
 
       it(`should return related resource (link to resource) for two stores`, () => {
-        interface Role {
-          id: number;
-          name: string;
-        }
-        class RoleStore extends ResourceStore<Role> {
-          public name = 'role';
-
-          public schema: Interfaces.Schema<Role> = {
-            id: Enums.SchemaType.Number,
-            name: Enums.SchemaType.String,
-          };
-        }
-        const roleStore = new RoleStore();
-
-        interface User {
-          id: number;
-          roleId: number;
-          role?: User;
-        }
-        class UserResourceStore extends ResourceStore<User> {
-          public name = 'user';
-
-          public schema: Interfaces.Schema<User> = {
-            id: Enums.SchemaType.Number,
-            roleId: Enums.SchemaType.Number,
-            role: {
-              type: Enums.SchemaType.Relation,
-              relation: Enums.RelationType.BelongsToOne,
-              sourceProperty: 'roleId',
-              resource: 'role',
-            },
-          };
-        }
-        const userResourceStore = new UserResourceStore();
-
-        const relationMap = new Map();
-        relationMap.set(userResourceStore.name, userResourceStore);
-        relationMap.set(roleStore.name, roleStore);
-        userResourceStore.relationMap = relationMap;
-
         const role = roleStore.inject({
           id: 1,
           name: 'Admin',
         });
 
-        const user = userResourceStore.inject({
+        const user = userWithRoleResourceStore.inject({
           id: 2,
           roleId: 1,
         });
