@@ -360,6 +360,10 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
     switch (includeField.relation) {
       case Enums.RelationType.BelongsToOne: {
         const includeResourceId: string = sourceResource[includeField.sourceProperty];
+        if (Helper.isNil(includeResourceId) === true) {
+          return null;
+        }
+
         const includeResource = resourceStore.findById(includeResourceId);
         return includeResource;
       }
