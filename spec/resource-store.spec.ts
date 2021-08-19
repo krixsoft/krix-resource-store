@@ -713,7 +713,7 @@ describe(`KxModule`, () => {
 
       it(`should return "null" if relation not found in the related store for two stores`, () => {
         const user = userWithRoleResourceStore.inject({
-          id: 2,
+          id: 1,
           roleId: 1,
         });
 
@@ -727,7 +727,7 @@ describe(`KxModule`, () => {
         });
 
         const user = userWithRoleResourceStore.inject({
-          id: 2,
+          id: 1,
           roleId: 1,
         });
 
@@ -859,7 +859,7 @@ describe(`KxModule`, () => {
 
       it(`should return empty array if relation not found in the related store for two stores`, () => {
         const user = userWithRolesResourceStore.inject({
-          id: 2,
+          id: 1,
           rolesIds: [ 1 ],
         });
 
@@ -884,6 +884,298 @@ describe(`KxModule`, () => {
         expect(roles).to.have.lengthOf(2);
         expect(roles).to.include(role1);
         expect(roles).to.include(role2);
+      });
+    });
+
+    describe(`HasOne`, () => {
+      interface UserWithFriend {
+        id: number;
+        friendId: number;
+        friend?: UserWithFriend;
+      }
+      class UserWithFriendResourceStore extends ResourceStore<UserWithFriend> {
+        public name = 'userWithFriend';
+
+        public schema: Interfaces.Schema<UserWithFriend> = {
+          id: Enums.SchemaType.Number,
+          friendId: Enums.SchemaType.Number,
+          friend: {
+            type: Enums.SchemaType.Relation,
+            relation: Enums.RelationType.HasOne,
+            targetProperty: 'friendId',
+            resource: 'userWithFriend',
+          },
+        };
+      }
+      let userWithFriendResourceStore: UserWithFriendResourceStore;
+
+      interface Book {
+        id: number;
+        name: string;
+        authorId: number;
+      }
+      class BookStore extends ResourceStore<Book> {
+        public name = 'book';
+
+        public schema: Interfaces.Schema<Book> = {
+          id: Enums.SchemaType.Number,
+          name: Enums.SchemaType.String,
+          authorId: Enums.SchemaType.Number,
+        };
+      }
+      let bookStore: BookStore;
+
+      interface UserWithBook {
+        id: number;
+        book?: UserWithBook;
+      }
+      class UserWithBookResourceStore extends ResourceStore<UserWithBook> {
+        public name = 'userWithBook';
+
+        public schema: Interfaces.Schema<UserWithBook> = {
+          id: Enums.SchemaType.Number,
+          book: {
+            type: Enums.SchemaType.Relation,
+            relation: Enums.RelationType.HasOne,
+            targetProperty: 'authorId',
+            resource: 'book',
+          },
+        };
+      }
+      let userWithBookResourceStore: UserWithBookResourceStore;
+
+      const relationMap = new Map();
+
+      beforeEach(() => {
+        relationMap.clear();
+
+        userWithFriendResourceStore = new UserWithFriendResourceStore();
+        relationMap.set(userWithFriendResourceStore.name, userWithFriendResourceStore);
+        userWithFriendResourceStore.relationMap = relationMap;
+
+        bookStore = new BookStore();
+        relationMap.set(bookStore.name, bookStore);
+        bookStore.relationMap = relationMap;
+
+        userWithBookResourceStore = new UserWithBookResourceStore();
+        relationMap.set(userWithBookResourceStore.name, userWithBookResourceStore);
+        userWithBookResourceStore.relationMap = relationMap;
+      });
+
+      it(`should return "null" if source field contains "nil" value`, () => {
+        const user = userWithFriendResourceStore.inject({
+          id: 1,
+          friendId: null,
+        });
+
+        expect(user.friend).to.be.null;
+      });
+
+      it(`should return "null" if relation not found in the related store for one store`, () => {
+        const user = userWithFriendResourceStore.inject({
+          id: 1,
+          friendId: 2,
+        });
+
+        expect(user.friend).to.be.null;
+      });
+
+      it(`should return related resource (link to resource) for one store`, () => {
+        const injectedUser1 = userWithFriendResourceStore.inject({
+          id: 1,
+          friendId: null,
+        });
+
+        const injectedUser2 = userWithFriendResourceStore.inject({
+          id: 2,
+          friendId: 1,
+        });
+
+        expect(injectedUser1.friend).to.be.equal(injectedUser2);
+      });
+
+      it(`should return "null" if relation not found in the related store for two stores`, () => {
+        const user = userWithBookResourceStore.inject({
+          id: 1,
+        });
+
+        expect(user.book).to.be.null;
+      });
+
+      it(`should return related resource (link to resource) for two stores`, () => {
+        const book = bookStore.inject({
+          id: 1,
+          name: 'Vavilon',
+          authorId: 1,
+        });
+
+        const user = userWithBookResourceStore.inject({
+          id: 1,
+        });
+
+        expect(user.book).to.be.equal(book);
+      });
+    });
+
+    describe(`HasMany`, () => {
+      interface UserWithFriends {
+        id: number;
+        friendId: number;
+        friends?: UserWithFriends[];
+      }
+      class UserWithFriendsResourceStore extends ResourceStore<UserWithFriends> {
+        public name = 'userWithFriends';
+
+        public schema: Interfaces.Schema<UserWithFriends> = {
+          id: Enums.SchemaType.Number,
+          friendId: Enums.SchemaType.Number,
+          friends: {
+            type: Enums.SchemaType.Relation,
+            relation: Enums.RelationType.HasMany,
+            targetProperty: 'friendId',
+            resource: 'userWithFriends',
+          },
+        };
+      }
+      let userWithFriendsResourceStore: UserWithFriendsResourceStore;
+
+      interface Book {
+        id: number;
+        name: string;
+        authorId: number;
+      }
+      class BookStore extends ResourceStore<Book> {
+        public name = 'book';
+
+        public schema: Interfaces.Schema<Book> = {
+          id: Enums.SchemaType.Number,
+          name: Enums.SchemaType.String,
+          authorId: Enums.SchemaType.Number,
+        };
+      }
+      let bookStore: BookStore;
+
+      interface UserWithBooks {
+        id: number;
+        books?: UserWithBooks[];
+      }
+      class UserWithRolesResourceStore extends ResourceStore<UserWithBooks> {
+        public name = 'userWithBooks';
+
+        public schema: Interfaces.Schema<UserWithBooks> = {
+          id: Enums.SchemaType.Number,
+          books: {
+            type: Enums.SchemaType.Relation,
+            relation: Enums.RelationType.HasMany,
+            targetProperty: 'authorId',
+            resource: 'book',
+          },
+        };
+      }
+      let userWithBooksResourceStore: UserWithRolesResourceStore;
+
+      const relationMap = new Map();
+
+      beforeEach(() => {
+        relationMap.clear();
+
+        userWithFriendsResourceStore = new UserWithFriendsResourceStore();
+        relationMap.set(userWithFriendsResourceStore.name, userWithFriendsResourceStore);
+        userWithFriendsResourceStore.relationMap = relationMap;
+
+        bookStore = new BookStore();
+        relationMap.set(bookStore.name, bookStore);
+        bookStore.relationMap = relationMap;
+
+        userWithBooksResourceStore = new UserWithRolesResourceStore();
+        relationMap.set(userWithBooksResourceStore.name, userWithBooksResourceStore);
+        userWithBooksResourceStore.relationMap = relationMap;
+      });
+
+      it(`should return empty array if relations not found in the empty related store for one store`, () => {
+        const user = userWithFriendsResourceStore.inject({
+          id: 1,
+          friendId: null,
+        });
+
+        expect(user.friends).to.be.an('array').that.is.empty;
+      });
+
+      it(`should return empty array if relations not found in the not-empty related store for one store`, () => {
+        const user = userWithFriendsResourceStore.inject({
+          id: 1,
+          friendId: null,
+        });
+        userWithFriendsResourceStore.inject({
+          id: 2,
+          friendId: null,
+        });
+
+        expect(user.friends).to.be.an('array').that.is.empty;
+      });
+
+      it(`should return related resources (link to resources) for one store`, () => {
+        const user1 = userWithFriendsResourceStore.inject({
+          id: 1,
+          friendId: null,
+        });
+        const user2 = userWithFriendsResourceStore.inject({
+          id: 2,
+          friendId: 1,
+        });
+        const user3 = userWithFriendsResourceStore.inject({
+          id: 3,
+          friendId: 1,
+        });
+
+        const friends = user1.friends;
+        expect(friends).to.have.lengthOf(2);
+        expect(friends).to.include(user2);
+        expect(friends).to.include(user3);
+      });
+
+      it(`should return empty array if relation not found in the empty related store for two stores`, () => {
+        const user = userWithBooksResourceStore.inject({
+          id: 1,
+        });
+
+        expect(user.books).to.be.an('array').that.is.empty;
+      });
+
+      it(`should return empty array if relation not found in the not-empty related store for two stores`, () => {
+        const user = userWithBooksResourceStore.inject({
+          id: 1,
+        });
+
+        bookStore.inject({
+          id: 1,
+          name: 'Book 1',
+          authorId: null,
+        });
+
+        expect(user.books).to.be.an('array').that.is.empty;
+      });
+
+      it(`should return related resources (link to resources) for two stores`, () => {
+        const user = userWithBooksResourceStore.inject({
+          id: 1,
+        });
+
+        const book1 = bookStore.inject({
+          id: 1,
+          name: 'Book 1',
+          authorId: 1,
+        });
+        const book2 = bookStore.inject({
+          id: 2,
+          name: 'Book 2',
+          authorId: 1,
+        });
+
+        const books = user.books;
+        expect(books).to.have.lengthOf(2);
+        expect(books).to.include(book1);
+        expect(books).to.include(book2);
       });
     });
   });
