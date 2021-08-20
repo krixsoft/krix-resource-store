@@ -1221,4 +1221,98 @@ describe(`KxModule`, () => {
       expect(user2.id).to.be.equal(2);
     });
   });
+
+  describe(`findOne`, () => {
+    interface User {
+      id: number;
+      firstName: string;
+      age: number;
+      numOfLikes: number;
+      isAuthor: boolean;
+      createdAt: Date;
+    }
+    class UserResourceStore extends ResourceStore<User> {
+      public name = 'user';
+
+      public schema: Interfaces.Schema<User> = {
+        id: Enums.SchemaType.Number,
+        firstName: Enums.SchemaType.String,
+        age: Enums.SchemaType.Number,
+        numOfLikes: Enums.SchemaType.Number,
+        isAuthor: Enums.SchemaType.Boolean,
+        createdAt: Enums.SchemaType.Date,
+      };
+    }
+    const userResourceStore = UserResourceStore.create();
+    const user1 = userResourceStore.inject({
+      id: 1,
+      firstName: 'Andrey',
+      age: 26,
+      numOfLikes: 0,
+      isAuthor: true,
+      createdAt: new Date('2021-05-20T22:11:26.892Z'),
+    });
+    const user2 = userResourceStore.inject({
+      id: 2,
+      firstName: 'Artur',
+      age: 24,
+      numOfLikes: 0,
+      isAuthor: true,
+      createdAt: new Date('2021-05-22T14:47:12.762Z'),
+    });
+    const user3 = userResourceStore.inject({
+      id: 3,
+      firstName: 'Andrey',
+      age: 29,
+      numOfLikes: 0,
+      isAuthor: false,
+      createdAt: new Date('2021-06-01T12:13:56.158Z'),
+    });
+    const user4 = userResourceStore.inject({
+      id: 4,
+      firstName: 'Alex',
+      age: null,
+      numOfLikes: 0,
+      isAuthor: true,
+      createdAt: new Date('2021-06-07T17:22:51.736Z'),
+    });
+    const user5 = userResourceStore.inject({
+      id: 5,
+      firstName: 'Roma',
+      age: 26,
+      numOfLikes: 0,
+      isAuthor: false,
+      createdAt: new Date('2021-07-15T16:36:12.278Z'),
+    });
+
+    describe(`find by "Number" field`, () => {
+      it(`should return "null" if resource not found with "===" statement`, () => {
+        const user = userResourceStore.findOne({
+          age: { '===': 25 },
+        });
+        expect(user).to.be.null;
+      });
+
+      it(`should return first resource if resource is found with "===" statement`, () => {
+        const user = userResourceStore.findOne({
+          age: { '===': 26 },
+        });
+        expect(user).to.be.equal(user1);
+      });
+
+      it(`should return "null" if resource not found with "!==" statement`, () => {
+        const user = userResourceStore.findOne({
+          numOfLikes: { '!==': 0 },
+        });
+        expect(user).to.be.null;
+      });
+
+      it(`should return first resource if resource is found with "!==" statement`, () => {
+        const user = userResourceStore.findOne({
+          age: { '!==': 26 },
+        });
+        expect(user).to.be.equal(user2);
+      });
+    });
+  });
 });
