@@ -142,7 +142,7 @@ export class Helper {
     arr: T[],
     value: T,
   ): boolean {
-    if (Helper.isEmpty(arr) === true) {
+    if (Helper.isArray(arr) === false || Helper.isEmpty(arr) === true) {
       return false;
     }
 
