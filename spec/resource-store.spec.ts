@@ -37,6 +37,7 @@ describe(`KxModule`, () => {
 
   describe(`inject`, () => {
     interface User {
+      id: number;
       firstName: string
       lastName: string
     }
@@ -44,6 +45,7 @@ describe(`KxModule`, () => {
       public name = 'user';
 
       public schema: Interfaces.Schema<User> = {
+        id: Enums.SchemaType.Number,
         firstName: {
           type: Enums.SchemaType.String,
           required: true,
@@ -119,17 +121,21 @@ describe(`KxModule`, () => {
       expect(injectedCopyUser).not.to.be.equal(injectedUser);
     });
 
-    it('should allow to reinject resource and their fields should be equal', () => {
-      const user = {
+    it('should replace resource in store after reinject', () => {
+      const injectedUser = userResourceStore.inject({
         id: 1,
         firstName: 'Ivan',
         lastName: 'Petrov',
-      } as any as User;
-      const injectedUser = userResourceStore.inject(user);
-      const injectedCopyUser = userResourceStore.inject(user);
+      });
+      const reinjectedUser = userResourceStore.inject({
+        id: 1,
+        firstName: 'Petr',
+        lastName: 'Petrov',
+      });
 
-      expect(injectedCopyUser.firstName).to.be.equal(injectedUser.firstName);
-      expect(injectedCopyUser.lastName).to.be.equal(injectedUser.lastName);
+      expect(injectedUser.id).to.be.equal(reinjectedUser.id);
+      expect(injectedUser.firstName).to.be.equal('Ivan');
+      expect(reinjectedUser.firstName).to.be.equal('Petr');
     });
   });
 
