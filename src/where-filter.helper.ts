@@ -194,14 +194,20 @@ export class WhereFilterHelper {
       return numvalue === condition.getTime();
     }
 
-    if (Helper.isEmpty(condition['in']) === false) {
+    if (Helper.has(condition, 'in') === true) {
+      if (Helper.isEmpty(condition['in']) === true) {
+        return false;
+      }
       const findedValue = Helper.find(condition['in'], (conditionValue) => {
         return numvalue === conditionValue.getTime();
       });
       return Helper.isNil(findedValue) === false;
     }
 
-    if (Helper.isEmpty(condition['!in']) === false) {
+    if (Helper.has(condition, '!in') === true) {
+      if (Helper.isEmpty(condition['!in']) === true) {
+        return false;
+      }
       const findedValue = Helper.find(condition['!in'], (conditionValue) => {
         return numvalue === conditionValue.getTime();
       });
@@ -266,11 +272,17 @@ export class WhereFilterHelper {
       return value === condition;
     }
 
-    if (Helper.isEmpty(condition['in']) === false) {
+    if (Helper.has(condition, 'in') === true) {
+      if (Helper.isEmpty(condition['in']) === true) {
+        return false;
+      }
       return Helper.includes(condition['in'], value) === true;
     }
 
-    if (Helper.isEmpty(condition['!in']) === false) {
+    if (Helper.has(condition, '!in') === true) {
+      if (Helper.isEmpty(condition['!in']) === true) {
+        return false;
+      }
       return Helper.includes(condition['!in'], value) === false;
     }
 
@@ -316,11 +328,17 @@ export class WhereFilterHelper {
       return value === condition;
     }
 
-    if (Helper.isEmpty(condition['in']) === false) {
+    if (Helper.has(condition, 'in') === true) {
+      if (Helper.isEmpty(condition['in']) === true) {
+        return false;
+      }
       return Helper.includes(condition['in'], value) === true;
     }
 
-    if (Helper.isEmpty(condition['!in']) === false) {
+    if (Helper.has(condition, '!in') === true) {
+      if (Helper.isEmpty(condition['!in']) === true) {
+        return false;
+      }
       return Helper.includes(condition['!in'], value) === false;
     }
 
