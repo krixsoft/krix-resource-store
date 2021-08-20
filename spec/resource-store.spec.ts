@@ -1243,7 +1243,7 @@ describe(`KxModule`, () => {
         createdAt: Enums.SchemaType.Date,
       };
     }
-    const userResourceStore = UserResourceStore.create();
+    const userResourceStore = new UserResourceStore();
     const user1 = userResourceStore.inject({
       id: 1,
       firstName: 'Andrey',

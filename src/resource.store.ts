@@ -29,19 +29,7 @@ export class ResourceStore <ResourceType extends Interfaces.BaseResource> {
   private sjInjectNotif: Subject<ResourceType>;
   private sjRemoveNotif: Subject<ResourceType>;
 
-  private whereFilterHelper: WhereFilterHelper<ResourceType>;
-
-  /**
-   * Creates an instance of resource store.
-   *
-   * @return {ResourceStore<ResponseType>}
-   */
-  static create <ResponseType> (
-  ): ResourceStore<ResponseType> {
-    const resourceStore = new this<ResponseType>();
-    resourceStore.whereFilterHelper = WhereFilterHelper.create(resourceStore.schema);
-    return resourceStore;
-  }
+  private whereFilterHelper: WhereFilterHelper;
 
   constructor (
   ) {
@@ -49,6 +37,8 @@ export class ResourceStore <ResourceType extends Interfaces.BaseResource> {
 
     this.sjInjectNotif = new Subject();
     this.sjRemoveNotif = new Subject();
+
+    this.whereFilterHelper = new WhereFilterHelper();
   }
 
   /**
@@ -168,7 +158,7 @@ export class ResourceStore <ResourceType extends Interfaces.BaseResource> {
       removedResources = this.store;
     } else {
       Helper.map(this.store, (resource) => {
-        const resourceIsRemoved = this.whereFilterHelper.filterByCondition(resource, where);
+        const resourceIsRemoved = this.whereFilterHelper.filterByCondition(this.schema, resource, where);
         if (resourceIsRemoved === false) {
           restResources.push(resource);
         } else {
@@ -221,7 +211,7 @@ export class ResourceStore <ResourceType extends Interfaces.BaseResource> {
     options?: Interfaces.FindOptions,
   ): ResourceType {
     const foundResource = Helper.find(this.store, (resource) => {
-      return this.whereFilterHelper.filterByCondition(resource, where);
+      return this.whereFilterHelper.filterByCondition(this.schema, resource, where);
     });
     if (Helper.isNil(foundResource) === true) {
       return null;
@@ -245,7 +235,7 @@ export class ResourceStore <ResourceType extends Interfaces.BaseResource> {
     const foundResources = Helper.isNil(where) === true
       ? [ ...this.store ]
       : Helper.filter(this.store, (resource) => {
-        return this.whereFilterHelper.filterByCondition(resource, where);
+        return this.whereFilterHelper.filterByCondition(this.schema, resource, where);
       });
     if (Helper.isNil(foundResources) === true) {
       return null;

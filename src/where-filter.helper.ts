@@ -1,34 +1,18 @@
 import type { Interfaces } from './shared';
 import { Enums, Helper } from './shared';
 
-export class WhereFilterHelper <ResourceType extends Interfaces.BaseResource> {
-
-  constructor (
-    private schema: Interfaces.Schema<ResourceType>,
-  ) {
-  }
-
-  /**
-   * Creates an insates of Where Filter helper.
-   *
-   * @param  {Interfaces.Schema<ResourceType>} schema
-   * @return {WhereFilterHelper<ResourceType>}
-   */
-  static create <ResourceType> (
-    schema: Interfaces.Schema<ResourceType>,
-  ): WhereFilterHelper<ResourceType> {
-    const inst = new WhereFilterHelper(schema);
-    return inst;
-  }
+export class WhereFilterHelper {
 
   /**
    * Returns `true` if resource correspons to `where` condition.
    *
+   * @param  {Interfaces.Schema<ResourceType>} schema
    * @param  {ResourceType} resource
    * @param  {Interfaces.WhereOptions<ResourceType>} where
    * @return {boolean}
    */
-  filterByCondition (
+  filterByCondition <ResourceType extends Interfaces.BaseResource> (
+    schema: Interfaces.Schema<ResourceType>,
     resource: ResourceType,
     where: Interfaces.WhereConditions<ResourceType>,
   ): boolean {
@@ -42,9 +26,9 @@ export class WhereFilterHelper <ResourceType extends Interfaces.BaseResource> {
     }
 
     const resourceIsEqual = Helper.every(propKeys, (propKey: keyof ResourceType) => {
-      const propertyType = typeof this.schema[propKey] === 'object'
-        ? (this.schema[propKey] as Interfaces.BaseComplexSchemaField).type
-        : this.schema[propKey];
+      const propertyType = typeof schema[propKey] === 'object'
+        ? (schema[propKey] as Interfaces.BaseComplexSchemaField).type
+        : schema[propKey];
       const condition = where[propKey];
       const resourceValue = resource[propKey];
 
