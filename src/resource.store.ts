@@ -181,19 +181,21 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
    * Finds a resource in the store by the ID. If resource isn't found, method will return NULL.
    *
    * @param  {string|number} id
-   * @param  {Interfaces.FindOptions} [options]
    * @return {ResourceType}
    */
   findById (
     id: string|number,
-    options?: Interfaces.FindOptions,
   ): ResourceType {
-    const oldResource = Helper.find(this.store, [ 'id', id ]);
-    if (Helper.isNil(oldResource) === true) {
+    if (Helper.isNil(id) === true) {
       return null;
     }
 
-    return oldResource;
+    const resource = Helper.find(this.store, [ 'id', id ]);
+    if (Helper.isNil(resource) === true) {
+      return null;
+    }
+
+    return resource;
   }
 
   /**
