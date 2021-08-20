@@ -242,5 +242,5 @@ export type Schema <ResourceType> = {
   /**
    * The description of a resource column for model
    */
-  [P in keyof ResourceType]: SchemaField <ResourceType>;
+  [P in keyof ResourceType]: SchemaField<ResourceType>;
 };

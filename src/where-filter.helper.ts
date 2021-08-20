@@ -1,11 +1,23 @@
 import type { Interfaces } from './shared';
 import { Enums, Helper } from './shared';
 
-export class WhereFilterHelper {
+export class WhereFilterHelper <ResourceType extends Interfaces.BaseResource> {
 
-  static create (
-  ): WhereFilterHelper {
-    const inst = new WhereFilterHelper();
+  constructor (
+    private schema: Interfaces.Schema<ResourceType>,
+  ) {
+  }
+
+  /**
+   * Creates an insates of Where Filter helper.
+   *
+   * @param  {Interfaces.Schema<ResourceType>} schema
+   * @return {WhereFilterHelper<ResourceType>}
+   */
+  static create <ResourceType> (
+    schema: Interfaces.Schema<ResourceType>,
+  ): WhereFilterHelper<ResourceType> {
+    const inst = new WhereFilterHelper(schema);
     return inst;
   }
 
@@ -16,7 +28,7 @@ export class WhereFilterHelper {
    * @param  {Interfaces.WhereOptions<ResourceType>} where
    * @return {boolean}
    */
-  filterByCondition <ResourceType extends Interfaces.BaseResource> (
+  filterByCondition (
     resource: ResourceType,
     where: Interfaces.WhereConditions<ResourceType>,
   ): boolean {
@@ -30,146 +42,28 @@ export class WhereFilterHelper {
     }
 
     const resourceIsEqual = Helper.every(propKeys, (propKey: keyof ResourceType) => {
+      const propertyType = typeof this.schema[propKey] === 'object'
+        ? (this.schema[propKey] as Interfaces.BaseComplexSchemaField).type
+        : this.schema[propKey];
       const condition = where[propKey];
       const resourceValue = resource[propKey];
 
-      const conditionType = this.defineWhereConditionType(condition);
-      switch (conditionType) {
-        case Enums.WhereConditionType.Boolean:
+      switch (propertyType) {
+        case Enums.SchemaType.Boolean:
           return this.filterByBoolean(resourceValue, condition);
-        case Enums.WhereConditionType.Date:
+        case Enums.SchemaType.Date:
           return this.filterByDate(resourceValue, condition);
-        case Enums.WhereConditionType.Number:
+        case Enums.SchemaType.Number:
           return this.filterByNumber(resourceValue, condition);
-        case Enums.WhereConditionType.String:
+        case Enums.SchemaType.String:
           return this.filterByString(resourceValue, condition);
-        case Enums.WhereConditionType.Unknown:
+        default:
           throw new Error(`WhereFilterHelper.filterByCondition: `
-            + `Something went wrong. We can recognize 'where' condition.`);
+            + `"Where" condition can only filter "Number", "Boolean", "String" and "Date" fields.`);
       }
     });
 
     return resourceIsEqual;
-  }
-
-  /**
-   * Defines type of `where` condition by a `where` operator and returns it. If types isn't defined,
-   * method will return `Unknown` type.
-   *
-   * @param  {Interfaces.WhereCondition<any>} condition
-   * @return {Enums.WhereConditionType}
-   */
-  private defineWhereConditionType (
-    condition: Interfaces.WhereCondition<any>,
-  ): Enums.WhereConditionType {
-    const primitiveType = this.defineWhereConditionTypeByValue(condition);
-
-    if (primitiveType !== Enums.WhereConditionType.Unknown) {
-      return primitiveType;
-    }
-
-    if (Helper.isEmpty(condition['in']) === false) {
-      return this.defineWhereConditionTypeByValue(condition['in'][0]);
-    }
-
-    if (Helper.isEmpty(condition['!in']) === false) {
-      return this.defineWhereConditionTypeByValue(condition['!in'][0]);
-    }
-
-    if (Helper.has(condition, '===') === true) {
-      return this.defineWhereConditionTypeByValue(condition['===']);
-    }
-
-    if (Helper.has(condition, '!==') === true) {
-      return this.defineWhereConditionTypeByValue(condition['!==']);
-    }
-
-    if (Helper.has(condition, 'like') === true || Helper.has(condition, '!like') === true) {
-      return Enums.WhereConditionType.String;
-    }
-
-    if (Helper.has(condition, '>=') === true) {
-      return this.defineWhereConditionTypeByValue(condition['>=']);
-    }
-
-    if (Helper.has(condition, '>') === true) {
-      return this.defineWhereConditionTypeByValue(condition['>']);
-    }
-
-    if (Helper.has(condition, '<=') === true) {
-      return this.defineWhereConditionTypeByValue(condition['<=']);
-    }
-
-    if (Helper.has(condition, '<') === true) {
-      return this.defineWhereConditionTypeByValue(condition['<']);
-    }
-
-    if (Helper.has(condition, '[]') === true) {
-      const range = condition['[]'];
-      return this.defineWhereConditionTypeByValue(range[0]);
-    }
-    if (Helper.has(condition, '![]') === true) {
-      const range = condition['![]'];
-      return this.defineWhereConditionTypeByValue(range[0]);
-    }
-
-    if (Helper.has(condition, '[)') === true) {
-      const range = condition['[)'];
-      return this.defineWhereConditionTypeByValue(range[0]);
-    }
-    if (Helper.has(condition, '![)') === true) {
-      const range = condition['![)'];
-      return this.defineWhereConditionTypeByValue(range[0]);
-    }
-
-    if (Helper.has(condition, '(]') === true) {
-      const range = condition['(]'];
-      return this.defineWhereConditionTypeByValue(range[0]);
-    }
-    if (Helper.has(condition, '!(]') === true) {
-      const range = condition['!(]'];
-      return this.defineWhereConditionTypeByValue(range[0]);
-    }
-
-    if (Helper.has(condition, '()') === true) {
-      const range = condition['()'];
-      return this.defineWhereConditionTypeByValue(range[0]);
-    }
-    if (Helper.has(condition, '!()') === true) {
-      const range = condition['!()'];
-      return this.defineWhereConditionTypeByValue(range[0]);
-    }
-
-    return Enums.WhereConditionType.Unknown;
-  }
-
-  /**
-   * Defines type of `where` condition by the value and returns it. If types isn't defined,
-   * method will return `Unknown` type.
-   *
-   * @param  {unknown} value
-   * @return {Enums.WhereConditionType}
-   */
-  private defineWhereConditionTypeByValue (
-    value: unknown,
-  ): Enums.WhereConditionType {
-    if (typeof value === 'string') {
-      return Enums.WhereConditionType.String;
-    }
-
-    if (typeof value === 'number') {
-      return Enums.WhereConditionType.Number;
-    }
-
-    if (typeof value === 'boolean') {
-      return Enums.WhereConditionType.Boolean;
-    }
-
-    if (value instanceof Date) {
-      return Enums.WhereConditionType.Date;
-    }
-
-    return Enums.WhereConditionType.Unknown;
   }
 
   /**
@@ -320,7 +214,7 @@ export class WhereFilterHelper {
     value: number | null | undefined,
     condition: number | null | undefined | Interfaces.NumberWhereConditions,
   ): boolean {
-    if (condition === null || condition === undefined) {
+    if (Helper.isNil(condition) === true) {
       return value === (condition as null);
     }
 
