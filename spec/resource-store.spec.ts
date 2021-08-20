@@ -1185,4 +1185,40 @@ describe(`KxModule`, () => {
       });
     });
   });
+
+  describe(`findById`, () => {
+    interface User {
+      id: number;
+    }
+    class UserResourceStore extends ResourceStore<User> {
+      public name = 'user';
+
+      public schema: Interfaces.Schema<User> = {
+        id: Enums.SchemaType.Number,
+      };
+    }
+    const userResourceStore = new UserResourceStore();
+    userResourceStore.inject({ id: 1 });
+    userResourceStore.inject({ id: 2 });
+
+    it(`should return "null" if resource id is "nil" value`, () => {
+      const user = userResourceStore.findById(null);
+      expect(user).to.be.null;
+    });
+
+    it(`should return "null" if resource not found`, () => {
+      const user = userResourceStore.findById(4);
+      expect(user).to.be.null;
+    });
+
+    it(`should return existing resource if resource is found`, () => {
+      const user1 = userResourceStore.findById(1);
+      expect(user1).not.to.be.null;
+      expect(user1.id).to.be.equal(1);
+
+      const user2 = userResourceStore.findById(2);
+      expect(user2).not.to.be.null;
+      expect(user2.id).to.be.equal(2);
+    });
+  });
 });
