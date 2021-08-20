@@ -6,15 +6,15 @@ import type { Interfaces } from './shared';
 import { WhereFilterHelper } from './where-filter.helper';
 import { Enums, Helper } from './shared';
 
-export abstract class ResourceStore <ResourceType extends Interfaces.BaseResource> {
+export class ResourceStore <ResourceType extends Interfaces.BaseResource> {
   /**
    * Store name.
    */
-  public abstract readonly name: string;
+  public readonly name: string;
   /**
    * Store name.
    */
-  public abstract readonly schema: Interfaces.Schema<ResourceType>;
+  public readonly schema: Interfaces.Schema<ResourceType>;
   /**
    * Contains all registered resource stores for `relation` logic.
    * FYI: This structure is managed by external provider.
@@ -29,7 +29,19 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
   private sjInjectNotif: Subject<ResourceType>;
   private sjRemoveNotif: Subject<ResourceType>;
 
-  private whereFilterHelper: WhereFilterHelper;
+  private whereFilterHelper: WhereFilterHelper<ResourceType>;
+
+  /**
+   * Creates an instance of resource store.
+   *
+   * @return {ResourceStore<ResponseType>}
+   */
+  static create <ResponseType> (
+  ): ResourceStore<ResponseType> {
+    const resourceStore = new this<ResponseType>();
+    resourceStore.whereFilterHelper = WhereFilterHelper.create(resourceStore.schema);
+    return resourceStore;
+  }
 
   constructor (
   ) {
@@ -37,8 +49,6 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
 
     this.sjInjectNotif = new Subject();
     this.sjRemoveNotif = new Subject();
-
-    this.whereFilterHelper = WhereFilterHelper.create();
   }
 
   /**
