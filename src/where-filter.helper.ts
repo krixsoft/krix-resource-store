@@ -173,6 +173,14 @@ export class WhereFilterHelper {
     }
 
     if (Helper.has(condition, 'like') === true) {
+      if (Helper.isNil(condition['like']) === true) {
+        return false;
+      }
+
+      if (typeof condition['like'] !== 'string' && (condition['like'] instanceof RegExp) === false) {
+        return false;
+      }
+
       const rgx = typeof condition['like'] === 'string'
         ? new RegExp(condition['like'])
         : condition['like'];
@@ -180,6 +188,14 @@ export class WhereFilterHelper {
     }
 
     if (Helper.has(condition, '!like') === true) {
+      if (Helper.isNil(condition['!like']) === true) {
+        return false;
+      }
+
+      if (typeof condition['!like'] !== 'string' && (condition['!like'] instanceof RegExp) === false) {
+        return false;
+      }
+
       const rgx = typeof condition['!like'] === 'string'
         ? new RegExp(condition['!like'])
         : condition['!like'];
