@@ -1,12 +1,4 @@
 
-export enum WhereConditionType {
-  String = 'string',
-  Number = 'number',
-  Boolean = 'boolean',
-  Date = 'date',
-  Unknown = 'unknown',
-}
-
 export enum RelationType {
   BelongsToOne = 'belongs-to-one',
   BelongsToMany = 'belongs-to-many',
