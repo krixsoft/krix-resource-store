@@ -17,12 +17,14 @@ export class WhereFilterHelper {
     where: Interfaces.WhereConditions<ResourceType>,
   ): boolean {
     if (Helper.isNil(where) === true) {
-      return true;
+      throw new Error(`WhereFilterHelper.filterByCondition: `
+        + `"Where" condition is required.`);
     }
 
     const propKeys = Helper.keys(where);
     if (Helper.isEmpty(propKeys) === true) {
-      return true;
+      throw new Error(`WhereFilterHelper.filterByCondition: `
+        + `"Where" condition must have at least 1 field.`);
     }
 
     const resourceIsEqual = Helper.every(propKeys, (propKey: keyof ResourceType) => {
