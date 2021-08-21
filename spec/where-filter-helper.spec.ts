@@ -736,4 +736,41 @@ describe(`WhereFilterHelper`, () => {
       expect(result6).to.be.true;
     });
   });
+
+  describe(`"Boolean" filter`, () => {
+
+    it(`should return correct result with "direct value" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        isAuthor: false,
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        isAuthor: true,
+      });
+      expect(result2).to.be.true;
+    });
+
+    it(`should return correct result with "===" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        isAuthor: { '===': false },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        isAuthor: { '===': true },
+      });
+      expect(result2).to.be.true;
+    });
+
+    it(`should return correct result with "!==" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        isAuthor: { '!==': true },
+      });
+      expect(result1).to.be.false;
+
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        isAuthor: { '!==': false },
+      });
+      expect(result2).to.be.true;
+    });
+  });
 });
