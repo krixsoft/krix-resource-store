@@ -199,7 +199,7 @@ export class WhereFilterHelper {
     }
 
     if (Helper.has(condition, 'like') === true) {
-      if (Helper.isNil(condition['like']) === true) {
+      if (Helper.isNil(condition['like']) === true || Helper.isNil(value) === true) {
         return false;
       }
 
@@ -214,7 +214,7 @@ export class WhereFilterHelper {
     }
 
     if (Helper.has(condition, '!like') === true) {
-      if (Helper.isNil(condition['!like']) === true) {
+      if (Helper.isNil(condition['!like']) === true || Helper.isNil(value) === true) {
         return false;
       }
 
