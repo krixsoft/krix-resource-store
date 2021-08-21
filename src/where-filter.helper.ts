@@ -73,7 +73,7 @@ export class WhereFilterHelper {
     }
 
     if (Helper.has(condition, 'in') === true) {
-      if (Helper.isEmpty(condition['in']) === true) {
+      if (Helper.isArray(condition['in']) === false || Helper.isEmpty(condition['in']) === true) {
         return false;
       }
       const findedValue = Helper.find(condition['in'], (conditionValue) => {
@@ -83,7 +83,7 @@ export class WhereFilterHelper {
     }
 
     if (Helper.has(condition, '!in') === true) {
-      if (Helper.isEmpty(condition['!in']) === true) {
+      if (Helper.isArray(condition['!in']) === false || Helper.isEmpty(condition['!in']) === true) {
         return false;
       }
       const findedValue = Helper.find(condition['!in'], (conditionValue) => {
@@ -151,14 +151,14 @@ export class WhereFilterHelper {
     }
 
     if (Helper.has(condition, 'in') === true) {
-      if (Helper.isEmpty(condition['in']) === true) {
+      if (Helper.isArray(condition['in']) === false || Helper.isEmpty(condition['in']) === true) {
         return false;
       }
       return Helper.includes(condition['in'], value) === true;
     }
 
     if (Helper.has(condition, '!in') === true) {
-      if (Helper.isEmpty(condition['!in']) === true) {
+      if (Helper.isArray(condition['!in']) === false || Helper.isEmpty(condition['!in']) === true) {
         return false;
       }
       return Helper.includes(condition['!in'], value) === false;
@@ -207,14 +207,14 @@ export class WhereFilterHelper {
     }
 
     if (Helper.has(condition, 'in') === true) {
-      if (Helper.isEmpty(condition['in']) === true) {
+      if (Helper.isArray(condition['in']) === false || Helper.isEmpty(condition['in']) === true) {
         return false;
       }
       return Helper.includes(condition['in'], value) === true;
     }
 
     if (Helper.has(condition, '!in') === true) {
-      if (Helper.isEmpty(condition['!in']) === true) {
+      if (Helper.isArray(condition['!in']) === false || Helper.isEmpty(condition['!in']) === true) {
         return false;
       }
       return Helper.includes(condition['!in'], value) === false;
