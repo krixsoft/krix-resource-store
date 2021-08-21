@@ -191,9 +191,9 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result5).to.be.true;
       const result6 = whereFilterHelper.filterByCondition(schema, user, {
-        age: { '!()': [ 30, 35 ] },
+        age: { '()': [ 30, 35 ] },
       });
-      expect(result6).to.be.true;
+      expect(result6).to.be.false;
     });
 
     it(`should return correct result with "!()" predicate`, () => {
