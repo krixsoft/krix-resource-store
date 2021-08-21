@@ -193,7 +193,7 @@ export class WhereFilterHelper {
 
     if (Helper.has(condition, '!==') === true) {
       if (Helper.isNil(condition['!==']) === true) {
-        return value === (condition['!=='] as (null | undefined));
+        return value !== (condition['!=='] as (null | undefined));
       }
       return value !== condition['!=='];
     }
