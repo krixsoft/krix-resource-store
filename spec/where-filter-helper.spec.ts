@@ -16,6 +16,10 @@ describe(`WhereFilterHelper`, () => {
     age: number;
     isAuthor: boolean;
     createdAt: Date;
+    metadata?: object;
+    role?: number;
+    friendId?: number;
+    friend?: User;
   }
   const schema: Interfaces.Schema<User> = {
     id: Enums.SchemaType.Number,
@@ -23,6 +27,20 @@ describe(`WhereFilterHelper`, () => {
     age: Enums.SchemaType.Number,
     isAuthor: Enums.SchemaType.Boolean,
     createdAt: Enums.SchemaType.Date,
+    metadata: Enums.SchemaType.Object,
+    friendId: Enums.SchemaType.Number,
+    role: {
+      type: Enums.SchemaType.Computed,
+      compute: () => {
+        return 5;
+      },
+    },
+    friend: {
+      type: Enums.SchemaType.Relation,
+      relation: Enums.RelationType.BelongsToMany,
+      sourceProperty: 'friendId',
+      resource: 'user',
+    },
   };
 
   const whereFilterHelper = new WhereFilterHelper();
@@ -930,6 +948,92 @@ describe(`WhereFilterHelper`, () => {
         firstName: { '!like': /^A.+/ },
       });
       expect(result8).to.be.false;
+    });
+  });
+
+  describe(`Params tests`, () => {
+
+    it(`should throw an error if field has unsupported type`, () => {
+      let testError: Error;
+      try {
+        whereFilterHelper.filterByCondition(schema, user, {
+          friend: user,
+        } as any);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).not.to.be.undefined;
+      expect(testError.message).to.be.equal(`WhereFilterHelper.filterByCondition: "Where" condition can only filter "Number", "Boolean", "String" and "Date" fields.`);
+
+      testError = undefined;
+      try {
+        whereFilterHelper.filterByCondition(schema, user, {
+          role: 5,
+        } as any);
+      } catch (error) {
+        testError = error;
+      }
+
+      testError = undefined;
+      try {
+        whereFilterHelper.filterByCondition(schema, user, {
+          metadata: {},
+        } as any);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).not.to.be.undefined;
+      expect(testError.message).to.be.equal(`WhereFilterHelper.filterByCondition: "Where" condition can only filter "Number", "Boolean", "String" and "Date" fields.`);
+    });
+
+    it(`should throw an error if where condition is "nil" or empty`, () => {
+      let testError: Error;
+      try {
+        whereFilterHelper.filterByCondition(schema, user, null);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).not.to.be.undefined;
+      expect(testError.message).to.be.equal(`WhereFilterHelper.filterByCondition: "Where" condition is required.`);
+
+      testError = undefined;
+      try {
+        whereFilterHelper.filterByCondition(schema, user, {});
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).not.to.be.undefined;
+      expect(testError.message).to.be.equal(`WhereFilterHelper.filterByCondition: "Where" condition must have at least 1 field.`);
+    });
+
+    it(`should filter by 2+ fields`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        age: { '>=': 26 },
+      });
+      expect(result1).to.be.true;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: 'Andrey',
+      });
+      expect(result2).to.be.true;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        age: { '>=': 26 },
+        firstName: 'Andrey',
+      });
+      expect(result3).to.be.true;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        age: { '>=': 26 },
+        firstName: 'Artur',
+      });
+      expect(result4).to.be.false;
+      const result5 = whereFilterHelper.filterByCondition(schema, user, {
+        age: 27,
+        firstName: 'Andrey',
+      });
+      expect(result5).to.be.false;
     });
   });
 });
