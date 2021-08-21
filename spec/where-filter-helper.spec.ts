@@ -385,4 +385,355 @@ describe(`WhereFilterHelper`, () => {
       expect(result6).to.be.true;
     });
   });
+
+  describe(`"Date" filter`, () => {
+
+    it(`should return correct result with "direct value" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: new Date('2021-05-19T22:11:26.892Z'),
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: new Date('2021-05-20T22:11:26.892Z'),
+      });
+      expect(result2).to.be.true;
+    });
+
+    it(`should return correct result with "===" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '===': new Date('2021-05-19T22:11:26.892Z') },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '===': new Date('2021-05-20T22:11:26.892Z') },
+      });
+      expect(result2).to.be.true;
+    });
+
+    it(`should return correct result with "!==" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!==': new Date('2021-05-20T22:11:26.892Z') },
+      });
+      expect(result1).to.be.false;
+
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!==': new Date('2021-05-19T22:11:26.892Z') },
+      });
+      expect(result2).to.be.true;
+    });
+
+    it(`should return correct result with ">" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '>': new Date('2021-05-20T22:11:26.892Z') },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '>': new Date('2021-05-21T22:11:26.892Z') },
+      });
+      expect(result2).to.be.false;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '>': new Date('2021-05-19T22:11:26.892Z') },
+      });
+      expect(result3).to.be.true;
+    });
+
+    it(`should return correct result with ">=" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '>=': new Date('2021-05-21T22:11:26.892Z') },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '>=': new Date('2021-05-19T22:11:26.892Z') },
+      });
+      expect(result2).to.be.true;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '>=': new Date('2021-05-20T22:11:26.892Z') },
+      });
+      expect(result3).to.be.true;
+    });
+
+    it(`should return correct result with "<" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '<': new Date('2021-05-19T22:11:26.892Z') },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '<': new Date('2021-05-20T22:11:26.892Z') },
+      });
+      expect(result2).to.be.false;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '<': new Date('2021-05-21T22:11:26.892Z') },
+      });
+      expect(result3).to.be.true;
+    });
+
+    it(`should return correct result with "<=" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '<=': new Date('2021-05-19T22:11:26.892Z') },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '<=': new Date('2021-05-20T22:11:26.892Z') },
+      });
+      expect(result2).to.be.true;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '<=': new Date('2021-05-21T22:11:26.892Z') },
+      });
+      expect(result3).to.be.true;
+    });
+
+    it(`should return correct result with "in" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { 'in': null },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { 'in': [] },
+      });
+      expect(result2).to.be.false;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { 'in': [ new Date('2021-05-19T22:11:26.892Z'), new Date('2021-05-21T22:11:26.892Z') ] },
+      });
+      expect(result3).to.be.false;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { 'in': [ new Date('2021-05-19T22:11:26.892Z'), new Date('2021-05-20T22:11:26.892Z') ] },
+      });
+      expect(result4).to.be.true;
+    });
+
+    it(`should return correct result with "!in" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!in': null },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!in': [] },
+      });
+      expect(result2).to.be.false;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!in': [ new Date('2021-05-19T22:11:26.892Z'), new Date('2021-05-21T22:11:26.892Z') ] },
+      });
+      expect(result3).to.be.true;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!in': [ new Date('2021-05-19T22:11:26.892Z'), new Date('2021-05-20T22:11:26.892Z') ] },
+      });
+      expect(result4).to.be.false;
+    });
+
+    it(`should return correct result with "()" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '()': null },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '()': [ new Date('2021-05-10T22:11:26.892Z'), new Date('2021-05-15T22:11:26.892Z') ] },
+      });
+      expect(result2).to.be.false;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '()': [ new Date('2021-05-15T22:11:26.892Z'), new Date('2021-05-20T22:11:26.892Z') ] },
+      });
+      expect(result3).to.be.false;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '()': [ new Date('2021-05-20T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result4).to.be.false;
+      const result5 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '()': [ new Date('2021-05-19T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result5).to.be.true;
+      const result6 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '()': [ new Date('2021-05-25T22:11:26.892Z'), new Date('2021-05-30T22:11:26.892Z') ] },
+      });
+      expect(result6).to.be.false;
+    });
+
+    it(`should return correct result with "!()" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!()': null },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!()': [ new Date('2021-05-10T22:11:26.892Z'), new Date('2021-05-15T22:11:26.892Z') ] },
+      });
+      expect(result2).to.be.true;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!()': [ new Date('2021-05-15T22:11:26.892Z'), new Date('2021-05-20T22:11:26.892Z') ] },
+      });
+      expect(result3).to.be.true;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!()': [ new Date('2021-05-20T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result4).to.be.true;
+      const result5 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!()': [ new Date('2021-05-19T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result5).to.be.false;
+      const result6 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!()': [ new Date('2021-05-25T22:11:26.892Z'), new Date('2021-05-30T22:11:26.892Z') ] },
+      });
+      expect(result6).to.be.true;
+    });
+
+    it(`should return correct result with "[)" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '[)': null },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '[)': [ new Date('2021-05-10T22:11:26.892Z'), new Date('2021-05-15T22:11:26.892Z') ] },
+      });
+      expect(result2).to.be.false;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '[)': [ new Date('2021-05-15T22:11:26.892Z'), new Date('2021-05-20T22:11:26.892Z') ] },
+      });
+      expect(result3).to.be.false;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '[)': [ new Date('2021-05-20T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result4).to.be.true;
+      const result5 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '[)': [ new Date('2021-05-19T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result5).to.be.true;
+      const result6 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '[)': [ new Date('2021-05-25T22:11:26.892Z'), new Date('2021-05-30T22:11:26.892Z') ] },
+      });
+      expect(result6).to.be.false;
+    });
+
+    it(`should return correct result with "![)" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '![)': null },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '![)': [ new Date('2021-05-10T22:11:26.892Z'), new Date('2021-05-15T22:11:26.892Z') ] },
+      });
+      expect(result2).to.be.true;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '![)': [ new Date('2021-05-15T22:11:26.892Z'), new Date('2021-05-20T22:11:26.892Z') ] },
+      });
+      expect(result3).to.be.true;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '![)': [ new Date('2021-05-20T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result4).to.be.false;
+      const result5 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '![)': [ new Date('2021-05-19T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result5).to.be.false;
+      const result6 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '![)': [ new Date('2021-05-25T22:11:26.892Z'), new Date('2021-05-30T22:11:26.892Z') ] },
+      });
+      expect(result6).to.be.true;
+    });
+
+    it(`should return correct result with "(]" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '(]': null },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '(]': [ new Date('2021-05-10T22:11:26.892Z'), new Date('2021-05-15T22:11:26.892Z') ] },
+      });
+      expect(result2).to.be.false;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '(]': [ new Date('2021-05-15T22:11:26.892Z'), new Date('2021-05-20T22:11:26.892Z') ] },
+      });
+      expect(result3).to.be.true;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '(]': [ new Date('2021-05-20T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result4).to.be.false;
+      const result5 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '(]': [ new Date('2021-05-19T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result5).to.be.true;
+      const result6 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '(]': [ new Date('2021-05-25T22:11:26.892Z'), new Date('2021-05-30T22:11:26.892Z') ] },
+      });
+      expect(result6).to.be.false;
+    });
+
+    it(`should return correct result with "!(]" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!(]': null },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!(]': [ new Date('2021-05-10T22:11:26.892Z'), new Date('2021-05-15T22:11:26.892Z') ] },
+      });
+      expect(result2).to.be.true;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!(]': [ new Date('2021-05-15T22:11:26.892Z'), new Date('2021-05-20T22:11:26.892Z') ] },
+      });
+      expect(result3).to.be.false;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!(]': [ new Date('2021-05-20T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result4).to.be.true;
+      const result5 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!(]': [ new Date('2021-05-19T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result5).to.be.false;
+      const result6 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '!(]': [ new Date('2021-05-25T22:11:26.892Z'), new Date('2021-05-30T22:11:26.892Z') ] },
+      });
+      expect(result6).to.be.true;
+    });
+
+    it(`should return correct result with "[]" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '[]': null },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '[]': [ new Date('2021-05-10T22:11:26.892Z'), new Date('2021-05-15T22:11:26.892Z') ] },
+      });
+      expect(result2).to.be.false;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '[]': [ new Date('2021-05-15T22:11:26.892Z'), new Date('2021-05-20T22:11:26.892Z') ] },
+      });
+      expect(result3).to.be.true;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '[]': [ new Date('2021-05-20T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result4).to.be.true;
+      const result5 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '[]': [ new Date('2021-05-19T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result5).to.be.true;
+      const result6 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '[]': [ new Date('2021-05-25T22:11:26.892Z'), new Date('2021-05-30T22:11:26.892Z') ] },
+      });
+      expect(result6).to.be.false;
+    });
+
+    it(`should return correct result with "![]" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '![]': null },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '![]': [ new Date('2021-05-10T22:11:26.892Z'), new Date('2021-05-15T22:11:26.892Z') ] },
+      });
+      expect(result2).to.be.true;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '![]': [ new Date('2021-05-15T22:11:26.892Z'), new Date('2021-05-20T22:11:26.892Z') ] },
+      });
+      expect(result3).to.be.false;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '![]': [ new Date('2021-05-20T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result4).to.be.false;
+      const result5 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '![]': [ new Date('2021-05-19T22:11:26.892Z'), new Date('2021-05-25T22:11:26.892Z') ] },
+      });
+      expect(result5).to.be.false;
+      const result6 = whereFilterHelper.filterByCondition(schema, user, {
+        createdAt: { '![]': [ new Date('2021-05-25T22:11:26.892Z'), new Date('2021-05-30T22:11:26.892Z') ] },
+      });
+      expect(result6).to.be.true;
+    });
+  });
 });
