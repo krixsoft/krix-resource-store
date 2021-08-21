@@ -78,26 +78,26 @@ export class WhereFilterHelper {
       if (Helper.isArray(condition['in']) === false || Helper.isEmpty(condition['in']) === true) {
         return false;
       }
-      const findedValue = Helper.find(condition['in'], (conditionValue) => {
+      const valueIndex = Helper.findIndex(condition['in'], (conditionValue) => {
         if (Helper.isNil(conditionValue) === true) {
           return valueAsNumber === (conditionValue as (null | undefined));
         }
         return valueAsNumber === conditionValue.getTime();
       });
-      return Helper.isNil(findedValue) === false;
+      return valueIndex !== -1;
     }
 
     if (Helper.has(condition, '!in') === true) {
       if (Helper.isArray(condition['!in']) === false || Helper.isEmpty(condition['!in']) === true) {
         return false;
       }
-      const findedValue = Helper.find(condition['!in'], (conditionValue) => {
+      const valueIndex = Helper.findIndex(condition['!in'], (conditionValue) => {
         if (Helper.isNil(conditionValue) === true) {
           return valueAsNumber === (conditionValue as (null | undefined));
         }
         return valueAsNumber === conditionValue.getTime();
       });
-      return Helper.isNil(findedValue) === true;
+      return valueIndex === -1;
     }
 
     if (Helper.has(condition, '===') === true) {
