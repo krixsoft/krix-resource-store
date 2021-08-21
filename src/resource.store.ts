@@ -6,15 +6,15 @@ import type { Interfaces } from './shared';
 import { WhereFilterHelper } from './where-filter.helper';
 import { Enums, Helper } from './shared';
 
-export class ResourceStore <ResourceType extends Interfaces.BaseResource> {
+export abstract class ResourceStore <ResourceType extends Interfaces.BaseResource> {
   /**
    * Store name.
    */
-  public readonly name: string;
+  public abstract readonly name: string;
   /**
    * Store name.
    */
-  public readonly schema: Interfaces.Schema<ResourceType>;
+  public abstract readonly schema: Interfaces.Schema<ResourceType>;
   /**
    * Contains all registered resource stores for `relation` logic.
    * FYI: This structure is managed by external provider.
