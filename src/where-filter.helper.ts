@@ -61,15 +61,15 @@ export class WhereFilterHelper {
     value: Date | null | undefined,
     condition: Date | null | undefined | Interfaces.DateWhereConditions,
   ): boolean {
-    const numvalue: number | null = value instanceof Date
-      ? value.getTime() : null;
+    const valueAsNumber: number | null = value instanceof Date
+      ? value.getTime() : value;
 
-    if (condition === null || condition === undefined) {
-      return numvalue === (condition as null);
+    if (Helper.isNil(condition) === true) {
+      return valueAsNumber === (condition as null);
     }
 
     if (condition instanceof Date) {
-      return numvalue === condition.getTime();
+      return valueAsNumber === condition.getTime();
     }
 
     if (Helper.has(condition, 'in') === true) {
@@ -77,7 +77,7 @@ export class WhereFilterHelper {
         return false;
       }
       const findedValue = Helper.find(condition['in'], (conditionValue) => {
-        return numvalue === conditionValue.getTime();
+        return valueAsNumber === conditionValue.getTime();
       });
       return Helper.isNil(findedValue) === false;
     }
@@ -87,17 +87,17 @@ export class WhereFilterHelper {
         return false;
       }
       const findedValue = Helper.find(condition['!in'], (conditionValue) => {
-        return numvalue === conditionValue.getTime();
+        return valueAsNumber === conditionValue.getTime();
       });
       return Helper.isNil(findedValue) === true;
     }
 
     if (Helper.has(condition, '===') === true) {
-      return numvalue === condition['==='].getTime();
+      return valueAsNumber === condition['==='].getTime();
     }
 
     if (Helper.has(condition, '!==') === true) {
-      return numvalue === condition['!=='].getTime();
+      return valueAsNumber !== condition['!=='].getTime();
     }
 
     return this.filterByRange(value, condition);
@@ -114,7 +114,7 @@ export class WhereFilterHelper {
     value: boolean | null | undefined,
     condition: boolean | null | undefined | Interfaces.BooleanWhereConditions,
   ): boolean {
-    if (condition === null || condition === undefined) {
+    if (Helper.isNil(condition) === true) {
       return value === (condition as null);
     }
 
@@ -142,7 +142,7 @@ export class WhereFilterHelper {
     value: string | null | undefined,
     condition: string | null | undefined | Interfaces.StringWhereConditions,
   ): boolean {
-    if (condition === null || condition === undefined) {
+    if (Helper.isNil(condition) === true) {
       return value === (condition as null);
     }
 
