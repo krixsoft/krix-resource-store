@@ -773,4 +773,163 @@ describe(`WhereFilterHelper`, () => {
       expect(result2).to.be.true;
     });
   });
+
+  describe(`"String" filter`, () => {
+
+    it(`should return correct result with "direct value" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: 'Artur',
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: 'Andrey',
+      });
+      expect(result2).to.be.true;
+    });
+
+    it(`should return correct result with "===" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '===': 'Artur' },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '===': 'Andrey' },
+      });
+      expect(result2).to.be.true;
+    });
+
+    it(`should return correct result with "!==" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!==': 'Andrey' },
+      });
+      expect(result1).to.be.false;
+
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!==': 'Artur' },
+      });
+      expect(result2).to.be.true;
+    });
+
+    it(`should return correct result with "in" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { 'in': null },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { 'in': [] },
+      });
+      expect(result2).to.be.false;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { 'in': [ 'Artur', 'Roma' ] },
+      });
+      expect(result3).to.be.false;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { 'in': [ 'Artur', 'Andrey' ] },
+      });
+      expect(result4).to.be.true;
+    });
+
+    it(`should return correct result with "!in" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!in': null },
+      });
+      expect(result1).to.be.false;
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!in': [] },
+      });
+      expect(result2).to.be.false;
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!in': [ 'Artur', 'Roma' ] },
+      });
+      expect(result3).to.be.true;
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!in': [ 'Artur', 'Andrey' ] },
+      });
+      expect(result4).to.be.false;
+    });
+
+    it(`should return correct result with "like" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { 'like': 'Artur' },
+      });
+      expect(result1).to.be.false;
+
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { 'like': 'Andrey' },
+      });
+      expect(result2).to.be.true;
+
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { 'like': 'A' },
+      });
+      expect(result3).to.be.true;
+
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { 'like': null },
+      });
+      expect(result4).to.be.false;
+
+      const result5 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { 'like': /Andrey/ },
+      });
+      expect(result5).to.be.true;
+
+      const result6 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { 'like': /Ar/ },
+      });
+      expect(result6).to.be.false;
+
+      const result7 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { 'like': /.+/ },
+      });
+      expect(result7).to.be.true;
+
+      const result8 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { 'like': /^A.+/ },
+      });
+      expect(result8).to.be.true;
+    });
+
+    it(`should return correct result with "!like" predicate`, () => {
+      const result1 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!like': 'Artur' },
+      });
+      expect(result1).to.be.true;
+
+      const result2 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!like': 'Andrey' },
+      });
+      expect(result2).to.be.false;
+
+      const result3 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!like': 'A' },
+      });
+      expect(result3).to.be.false;
+
+      const result4 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!like': null },
+      });
+      expect(result4).to.be.false;
+
+      const result5 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!like': /Andrey/ },
+      });
+      expect(result5).to.be.false;
+
+      const result6 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!like': /Ar/ },
+      });
+      expect(result6).to.be.true;
+
+      const result7 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!like': /.+/ },
+      });
+      expect(result7).to.be.false;
+
+      const result8 = whereFilterHelper.filterByCondition(schema, user, {
+        firstName: { '!like': /^A.+/ },
+      });
+      expect(result8).to.be.false;
+    });
+  });
 });
