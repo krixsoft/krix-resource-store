@@ -63,11 +63,11 @@ export class WhereFilterHelper {
     value: Date | null | undefined,
     condition: Date | null | undefined | Interfaces.DateWhereConditions,
   ): boolean {
-    const valueAsNumber: number | null = value instanceof Date
+    const valueAsNumber: number | null | undefined = value instanceof Date
       ? value.getTime() : value;
 
     if (Helper.isNil(condition) === true) {
-      return valueAsNumber === (condition as null);
+      return valueAsNumber === (condition as (null | undefined));
     }
 
     if (condition instanceof Date) {
@@ -79,6 +79,9 @@ export class WhereFilterHelper {
         return false;
       }
       const findedValue = Helper.find(condition['in'], (conditionValue) => {
+        if (Helper.isNil(conditionValue) === true) {
+          return valueAsNumber === (conditionValue as (null | undefined));
+        }
         return valueAsNumber === conditionValue.getTime();
       });
       return Helper.isNil(findedValue) === false;
@@ -89,16 +92,25 @@ export class WhereFilterHelper {
         return false;
       }
       const findedValue = Helper.find(condition['!in'], (conditionValue) => {
+        if (Helper.isNil(conditionValue) === true) {
+          return valueAsNumber === (conditionValue as (null | undefined));
+        }
         return valueAsNumber === conditionValue.getTime();
       });
       return Helper.isNil(findedValue) === true;
     }
 
     if (Helper.has(condition, '===') === true) {
+      if (Helper.isNil(condition['===']) === true) {
+        return valueAsNumber === (condition['==='] as (null | undefined));
+      }
       return valueAsNumber === condition['==='].getTime();
     }
 
     if (Helper.has(condition, '!==') === true) {
+      if (Helper.isNil(condition['!==']) === true) {
+        return valueAsNumber !== (condition['!=='] as (null | undefined));
+      }
       return valueAsNumber !== condition['!=='].getTime();
     }
 
@@ -125,10 +137,16 @@ export class WhereFilterHelper {
     }
 
     if (Helper.has(condition, '===') === true) {
+      if (Helper.isNil(condition['===']) === true) {
+        return value === (condition['==='] as (null | undefined));
+      }
       return value === condition['==='];
     }
 
     if (Helper.has(condition, '!==') === true) {
+      if (Helper.isNil(condition['!==']) === true) {
+        return value === (condition['!=='] as (null | undefined));
+      }
       return value !== condition['!=='];
     }
   }
@@ -167,10 +185,16 @@ export class WhereFilterHelper {
     }
 
     if (Helper.has(condition, '===') === true) {
+      if (Helper.isNil(condition['===']) === true) {
+        return value === (condition['==='] as (null | undefined));
+      }
       return value === condition['==='];
     }
 
     if (Helper.has(condition, '!==') === true) {
+      if (Helper.isNil(condition['!==']) === true) {
+        return value === (condition['!=='] as (null | undefined));
+      }
       return value !== condition['!=='];
     }
 
@@ -239,10 +263,16 @@ export class WhereFilterHelper {
     }
 
     if (Helper.has(condition, '===') === true) {
+      if (Helper.isNil(condition['===']) === true) {
+        return value === (condition['==='] as (null | undefined));
+      }
       return value === condition['==='];
     }
 
     if (Helper.has(condition, '!==') === true) {
+      if (Helper.isNil(condition['!==']) === true) {
+        return value !== (condition['!=='] as (null | undefined));
+      }
       return value !== condition['!=='];
     }
 
@@ -261,83 +291,135 @@ export class WhereFilterHelper {
     condition: Interfaces.NumberWhereConditions | Interfaces.DateWhereConditions,
   ): boolean {
     if (Helper.has(condition, '>=') === true) {
+      if (Helper.isNil(condition['>=']) === true) {
+        throw new Error(`WhereFilterHelper.filterByRange: ">=" condition can't contain "nil" value.`);
+      }
       return value >= condition['>='];
     }
 
     if (Helper.has(condition, '>') === true) {
+      if (Helper.isNil(condition['>']) === true) {
+        throw new Error(`WhereFilterHelper.filterByRange: ">" condition can't contain "nil" value.`);
+      }
       return value > condition['>'];
     }
 
     if (Helper.has(condition, '<=') === true) {
+      if (Helper.isNil(condition['<=']) === true) {
+        throw new Error(`WhereFilterHelper.filterByRange: "<=" condition can't contain "nil" value.`);
+      }
       return value <= condition['<='];
     }
 
     if (Helper.has(condition, '<') === true) {
+      if (Helper.isNil(condition['<']) === true) {
+        throw new Error(`WhereFilterHelper.filterByRange: "<" condition can't contain "nil" value.`);
+      }
       return value < condition['<'];
     }
 
     if (Helper.has(condition, '[]') === true) {
-      if (Helper.isArray(condition['[]']) === false || Helper.isEmpty(condition['[]']) === true) {
+      const conditionValue = condition['[]'];
+      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
         return false;
       }
-      const range = condition['[]'] ?? condition['![]'];
-      return value >= range[0] && value <= range[1];
+
+      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+        throw new Error(`WhereFilterHelper.filterByRange: "[]" condition can't contain "nil" value.`);
+      }
+
+      return value >= conditionValue[0] && value <= conditionValue[1];
     }
 
     if (Helper.has(condition, '![]') === true) {
-      if (Helper.isArray(condition['![]']) === false || Helper.isEmpty(condition['![]']) === true) {
+      const conditionValue = condition['![]'];
+      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
         return false;
       }
-      const range = condition['[]'] ?? condition['![]'];
-      return !(value >= range[0] && value <= range[1]);
+
+      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+        throw new Error(`WhereFilterHelper.filterByRange: "![]" condition can't contain "nil" value.`);
+      }
+
+      return !(value >= conditionValue[0] && value <= conditionValue[1]);
     }
 
     if (Helper.has(condition, '[)') === true) {
-      if (Helper.isArray(condition['[)']) === false || Helper.isEmpty(condition['[)']) === true) {
+      const conditionValue = condition['[)'];
+      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
         return false;
       }
-      const range = condition['[)'] ?? condition['![)'];
-      return value >= range[0] && value < range[1];
+
+      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+        throw new Error(`WhereFilterHelper.filterByRange: "[)" condition can't contain "nil" value.`);
+      }
+
+      return value >= conditionValue[0] && value < conditionValue[1];
     }
 
     if (Helper.has(condition, '![)') === true) {
-      if (Helper.isArray(condition['![)']) === false || Helper.isEmpty(condition['![)']) === true) {
+      const conditionValue = condition['![)'];
+      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
         return false;
       }
-      const range = condition['[)'] ?? condition['![)'];
-      return !(value >= range[0] && value < range[1]);
+
+      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+        throw new Error(`WhereFilterHelper.filterByRange: "![)" condition can't contain "nil" value.`);
+      }
+
+      return !(value >= conditionValue[0] && value < conditionValue[1]);
     }
 
     if (Helper.has(condition, '(]') === true) {
-      if (Helper.isArray(condition['(]']) === false || Helper.isEmpty(condition['(]']) === true) {
+      const conditionValue = condition['(]'];
+      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
         return false;
       }
-      const range = condition['(]'] ?? condition['!(]'];
-      return value > range[0] && value <= range[1];
+
+      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+        throw new Error(`WhereFilterHelper.filterByRange: "(]" condition can't contain "nil" value.`);
+      }
+
+      return value > conditionValue[0] && value <= conditionValue[1];
     }
 
     if (Helper.has(condition, '!(]') === true) {
-      if (Helper.isArray(condition['!(]']) === false || Helper.isEmpty(condition['!(]']) === true) {
+      const conditionValue = condition['!(]'];
+      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
         return false;
       }
-      const range = condition['(]'] ?? condition['!(]'];
-      return !(value > range[0] && value <= range[1]);
+
+      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+        throw new Error(`WhereFilterHelper.filterByRange: "!(]" condition can't contain "nil" value.`);
+      }
+
+      return !(value > conditionValue[0] && value <= conditionValue[1]);
     }
 
     if (Helper.has(condition, '()') === true) {
-      if (Helper.isArray(condition['()']) === false || Helper.isEmpty(condition['()']) === true) {
+      const conditionValue = condition['()'];
+      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
         return false;
       }
-      const range = condition['()'] ?? condition['!()'];
-      return value > range[0] && value < range[1];
+
+      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+        throw new Error(`WhereFilterHelper.filterByRange: "()" condition can't contain "nil" value.`);
+      }
+
+      return value > conditionValue[0] && value < conditionValue[1];
     }
 
     if (Helper.has(condition, '!()') === true) {
-      if (Helper.isArray(condition['!()']) === false || Helper.isEmpty(condition['!()']) === true) {
+      const conditionValue = condition['!()'];
+      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
         return false;
       }
-      const range = condition['()'] ?? condition['!()'];
-      return !(value > range[0] && value < range[1]);
+
+      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+        throw new Error(`WhereFilterHelper.filterByRange: "!()" condition can't contain "nil" value.`);
+      }
+
+      return !(value > conditionValue[0] && value < conditionValue[1]);
     }
 
     return false;
