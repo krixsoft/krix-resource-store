@@ -258,32 +258,68 @@ export class WhereFilterHelper {
       return value < condition['<'];
     }
 
-    const rangeILIR = Helper.has(condition, '[]') === true;
-    if (rangeILIR === true || Helper.has(condition, '![]') === true) {
+    if (Helper.has(condition, '[]') === true) {
+      if (Helper.isArray(condition['[]']) === false || Helper.isEmpty(condition['[]']) === true) {
+        return false;
+      }
       const range = condition['[]'] ?? condition['![]'];
-      const result = value >= range[0] && value <= range[1];
-      return rangeILIR === true ? result : !result;
+      return value >= range[0] && value <= range[1];
     }
 
-    const rangeILNR = Helper.has(condition, '[)') === true;
-    if (rangeILNR === true || Helper.has(condition, '![)') === true) {
+    if (Helper.has(condition, '![]') === true) {
+      if (Helper.isArray(condition['![]']) === false || Helper.isEmpty(condition['![]']) === true) {
+        return false;
+      }
+      const range = condition['[]'] ?? condition['![]'];
+      return !(value >= range[0] && value <= range[1]);
+    }
+
+    if (Helper.has(condition, '[)') === true) {
+      if (Helper.isArray(condition['[)']) === false || Helper.isEmpty(condition['[)']) === true) {
+        return false;
+      }
       const range = condition['[)'] ?? condition['![)'];
-      const result = value >= range[0] && value < range[1];
-      return rangeILNR === true ? result : !result;
+      return value >= range[0] && value < range[1];
     }
 
-    const rangeNLIR = Helper.has(condition, '(]') === true;
-    if (rangeNLIR === true || Helper.has(condition, '!(]') === true) {
+    if (Helper.has(condition, '![)') === true) {
+      if (Helper.isArray(condition['![)']) === false || Helper.isEmpty(condition['![)']) === true) {
+        return false;
+      }
+      const range = condition['[)'] ?? condition['![)'];
+      return !(value >= range[0] && value < range[1]);
+    }
+
+    if (Helper.has(condition, '(]') === true) {
+      if (Helper.isArray(condition['(]']) === false || Helper.isEmpty(condition['(]']) === true) {
+        return false;
+      }
       const range = condition['(]'] ?? condition['!(]'];
-      const result = value > range[0] && value <= range[1];
-      return rangeNLIR === true ? result : !result;
+      return value > range[0] && value <= range[1];
     }
 
-    const rangeNLNR = Helper.has(condition, '()') === true;
-    if (rangeNLNR === true || Helper.has(condition, '!()') === true) {
+    if (Helper.has(condition, '!(]') === true) {
+      if (Helper.isArray(condition['!(]']) === false || Helper.isEmpty(condition['!(]']) === true) {
+        return false;
+      }
+      const range = condition['(]'] ?? condition['!(]'];
+      return !(value > range[0] && value <= range[1]);
+    }
+
+    if (Helper.has(condition, '()') === true) {
+      if (Helper.isArray(condition['()']) === false || Helper.isEmpty(condition['()']) === true) {
+        return false;
+      }
       const range = condition['()'] ?? condition['!()'];
-      const result = value > range[0] && value < range[1];
-      return rangeNLNR === true ? result : !result;
+      return value > range[0] && value < range[1];
+    }
+
+    if (Helper.has(condition, '!()') === true) {
+      if (Helper.isArray(condition['!()']) === false || Helper.isEmpty(condition['!()']) === true) {
+        return false;
+      }
+      const range = condition['()'] ?? condition['!()'];
+      return !(value > range[0] && value < range[1]);
     }
 
     return false;
