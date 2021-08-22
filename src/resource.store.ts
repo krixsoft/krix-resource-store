@@ -160,6 +160,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
 
     const resource = this.store[resourceIndex];
     this.store.splice(resourceIndex, 1);
+    this.removeInjectNotificationSubject(resource.id);
 
     this.sjRemoveNotif.next(resource);
     return resource;
@@ -192,6 +193,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
           restResources.push(resource);
         } else {
           removedResources.push(resource);
+          this.removeInjectNotificationSubject(resource.id);
         }
       });
     }
@@ -204,6 +206,24 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
       });
     }
     return removedResources;
+  }
+
+  /**
+   * Removes `inject` notification subject from the internal map.
+   *
+   * @param  {string | number} resourceId
+   * @return {void}
+   */
+  private removeInjectNotificationSubject (
+    resourceId: string | number,
+  ) {
+    const sjInjectResourceNotif = this.sjInjectResourcsNotifMap.get(resourceId);
+    if (Helper.isNil(sjInjectResourceNotif) === true) {
+      return;
+    }
+
+    sjInjectResourceNotif.complete();
+    this.sjInjectResourcsNotifMap.delete(resourceId);
   }
 
   /**
