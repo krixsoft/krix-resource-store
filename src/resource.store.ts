@@ -96,8 +96,11 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
     resource: ResourceType,
   ): ResourceType {
     if (Helper.has(resource, 'id') === false) {
-      throw new Error(`ResourceStore.set: `
-        + `Resource must have an ID property.`);
+      throw new Error(`ResourceStore.injectOne: Resource must have ID property.`);
+    }
+    const idType = typeof resource.id;
+    if (idType !== 'string' && idType !== 'number') {
+      throw new Error(`ResourceStore.injectOne: "id" must be a string or number.`);
     }
 
     const oldResourceIndex = Helper.findIndex(this.store, [ 'id', resource.id ]);
