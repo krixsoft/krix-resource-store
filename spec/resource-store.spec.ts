@@ -1282,4 +1282,68 @@ describe(`KxModule`, () => {
       expect(user).to.be.equal(user1);
     });
   });
+
+  describe(`findAll`, () => {
+    interface User {
+      id: number;
+      firstName: string;
+      age: number;
+      numOfLikes: number;
+      isAuthor: boolean;
+      createdAt: Date;
+    }
+    class UserResourceStore extends ResourceStore<User> {
+      public name = 'user';
+
+      public schema: Interfaces.Schema<User> = {
+        id: Enums.SchemaType.Number,
+        firstName: Enums.SchemaType.String,
+        age: Enums.SchemaType.Number,
+        numOfLikes: Enums.SchemaType.Number,
+        isAuthor: Enums.SchemaType.Boolean,
+        createdAt: Enums.SchemaType.Date,
+      };
+    }
+    const userResourceStore = new UserResourceStore();
+    const user1 = userResourceStore.inject({
+      id: 1,
+      firstName: 'Andrey',
+      age: 26,
+      numOfLikes: null,
+      isAuthor: true,
+      createdAt: new Date('2021-05-20T22:11:26.892Z'),
+    });
+    const user2 = userResourceStore.inject({
+      id: 2,
+      firstName: 'Artur',
+      age: 24,
+      numOfLikes: 0,
+      isAuthor: true,
+      createdAt: new Date('2021-05-22T14:47:12.762Z'),
+    });
+
+    it(`should return "null" if resource not found`, () => {
+      const users = userResourceStore.findAll({
+        age: 25,
+      });
+      expect(users).to.be.an('array').that.is.empty;
+    });
+
+    it(`should return the array with 1 found resource if the resource's field value is uninque`, () => {
+      const users = userResourceStore.findAll({
+        age: 24,
+      });
+      expect(users).to.have.lengthOf(1);
+      expect(users[0]).to.be.equal(user2);
+    });
+
+    it(`should return all found resources if the resource's field value isn't uninque`, () => {
+      const users = userResourceStore.findAll({
+        isAuthor: true,
+      });
+      expect(users).to.have.lengthOf(2);
+      expect(users[0]).to.be.equal(user1);
+      expect(users[1]).to.be.equal(user2);
+    });
+  });
 });
