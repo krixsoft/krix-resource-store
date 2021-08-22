@@ -170,7 +170,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
         if (resourceIsRemoved === false) {
           restResources.push(resource);
         } else {
-          removedResources.push();
+          removedResources.push(resource);
         }
       });
     }
