@@ -23,6 +23,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
 
   private store: ResourceType[];
 
+  private sjInjectResourcsNotifMap: Map<string|number, Subject<ResourceType>>;
   /**
    * RxJS observables.
    */
@@ -35,6 +36,8 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
   ) {
     this.store = [];
 
+    this.sjInjectResourcsNotifMap = new Map();
+
     this.sjInjectNotif = new Subject();
     this.sjRemoveNotif = new Subject();
 
@@ -42,13 +45,25 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
   }
 
   /**
-   * Returns RxJS observable which gets signals with an injected resources.
+   * Returns RxJS observable which gets signals with an injected resources. If resource id is defined, method
+   * will get/create a Subject for this resource and create RxJS observable for it.
    *
+   * @param  {string|number} [resourceId]
    * @return {Observable<ResourceType>}
    */
   getInjectObserver (
+    resourceId?: string | number,
   ): Observable<ResourceType> {
-    return this.sjInjectNotif.asObservable();
+    if (Helper.isNil(resourceId) === true) {
+      return this.sjInjectNotif.asObservable();
+    }
+
+    let sjInjectResourceNotif = this.sjInjectResourcsNotifMap.get(resourceId);
+    if (Helper.isNil(sjInjectResourceNotif) === true) {
+      sjInjectResourceNotif = new Subject();
+    }
+
+    return sjInjectResourceNotif.asObservable();
   }
 
   /**
@@ -114,6 +129,12 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
     }
 
     this.sjInjectNotif.next(transformedResource);
+
+    const sjInjectResourceNotif = this.sjInjectResourcsNotifMap.get(resource.id);
+    if (Helper.isNil(sjInjectResourceNotif) === false) {
+      sjInjectResourceNotif.next(transformedResource);
+    }
+
     return transformedResource;
   }
 
