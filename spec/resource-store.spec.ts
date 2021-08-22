@@ -1346,4 +1346,46 @@ describe(`KxModule`, () => {
       expect(users[1]).to.be.equal(user2);
     });
   });
+
+  describe(`removeById`, () => {
+    interface User {
+      id: number;
+    }
+    class UserResourceStore extends ResourceStore<User> {
+      public name = 'user';
+
+      public schema: Interfaces.Schema<User> = {
+        id: Enums.SchemaType.Number,
+      };
+    }
+    const userResourceStore = new UserResourceStore();
+    const user1 = userResourceStore.inject({ id: 1 });
+    userResourceStore.inject({ id: 2 });
+
+    it(`should throw an error if resource id isn't a string or number`, () => {
+      let testError: Error;
+      try {
+        userResourceStore.removeById(null);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).not.to.be.undefined;
+      expect(testError.message).to.be.equal(`ResourceStore.removeById: "id" must be a string or number.`);
+    });
+
+    it(`should return "null" and not remove anything if resource not found`, () => {
+      const user = userResourceStore.removeById(4);
+      expect(user).to.be.null;
+      const allResources = userResourceStore.findAll();
+      expect(allResources).to.have.lengthOf(2);
+    });
+
+    it(`should remove existing resource and remove it from store if resource is found`, () => {
+      const user = userResourceStore.removeById(1);
+      expect(user).to.be.equal(user1);
+      const allResources = userResourceStore.findAll();
+      expect(allResources).to.have.lengthOf(1);
+    });
+  });
 });
