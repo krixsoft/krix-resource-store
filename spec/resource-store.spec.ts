@@ -1438,4 +1438,100 @@ describe(`ResourceStore`, () => {
       expect(allResources).to.have.lengthOf(1);
     });
   });
+
+  describe(`remove`, () => {
+    interface User {
+      id: number;
+      firstName: string;
+      age: number;
+      numOfLikes: number;
+      isAuthor: boolean;
+      createdAt: Date;
+    }
+    class UserResourceStore extends ResourceStore<User> {
+      public name = 'user';
+
+      public schema: Interfaces.Schema<User> = {
+        id: Enums.SchemaType.Number,
+        firstName: Enums.SchemaType.String,
+        age: Enums.SchemaType.Number,
+        numOfLikes: Enums.SchemaType.Number,
+        isAuthor: Enums.SchemaType.Boolean,
+        createdAt: Enums.SchemaType.Date,
+      };
+    }
+    let userResourceStore: UserResourceStore;
+
+    beforeEach(() => {
+      userResourceStore = new UserResourceStore();
+      userResourceStore.inject({
+        id: 1,
+        firstName: 'Andrey',
+        age: 26,
+        numOfLikes: null,
+        isAuthor: true,
+        createdAt: new Date('2021-05-20T22:11:26.892Z'),
+      });
+      userResourceStore.inject({
+        id: 2,
+        firstName: 'Artur',
+        age: 24,
+        numOfLikes: 0,
+        isAuthor: true,
+        createdAt: new Date('2021-05-22T14:47:12.762Z'),
+      });
+      userResourceStore.inject({
+        id: 3,
+        firstName: 'Roma',
+        age: 26,
+        numOfLikes: 0,
+        isAuthor: false,
+        createdAt: new Date('2021-05-27T14:47:12.762Z'),
+      });
+    });
+
+    it(`should return empty array if store is empty`, () => {
+      userResourceStore = new UserResourceStore();
+      const users = userResourceStore.remove({
+        age: 25,
+      });
+      expect(users).to.be.an('array').that.is.empty;
+
+      const allResources = userResourceStore.findAll();
+      expect(allResources).to.have.lengthOf(0);
+    });
+
+    it(`should return empty array if resources not found`, () => {
+      const users = userResourceStore.remove({
+        age: 25,
+      });
+      expect(users).to.be.an('array').that.is.empty;
+
+      const allResources = userResourceStore.findAll();
+      expect(allResources).to.have.lengthOf(3);
+    });
+
+    it(`should return the array with 1 removed resource if the resource's field value is uninque`, () => {
+      const users = userResourceStore.remove({
+        age: 24,
+      });
+      expect(users).to.have.lengthOf(1);
+      expect(users[0].id).to.be.equal(2);
+
+      const allResources = userResourceStore.findAll();
+      expect(allResources).to.have.lengthOf(2);
+    });
+
+    it(`should return all removed resources if the resource's field value isn't uninque`, () => {
+      const users = userResourceStore.remove({
+        isAuthor: true,
+      });
+      expect(users).to.have.lengthOf(2);
+      expect(users[0].id).to.be.equal(1);
+      expect(users[1].id).to.be.equal(2);
+
+      const allResources = userResourceStore.findAll();
+      expect(allResources).to.have.lengthOf(1);
+    });
+  });
 });
