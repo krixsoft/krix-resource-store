@@ -8,7 +8,7 @@ import 'reflect-metadata';
 
 import { ResourceStore, Enums, Interfaces } from '../dist';
 
-describe(`KxModule`, () => {
+describe(`ResourceStore`, () => {
 
   it(`should create an instance of Resource store`, () => {
     interface User {
@@ -136,6 +136,56 @@ describe(`KxModule`, () => {
       expect(injectedUser.id).to.be.equal(reinjectedUser.id);
       expect(injectedUser.firstName).to.be.equal('Ivan');
       expect(reinjectedUser.firstName).to.be.equal('Petr');
+    });
+
+    it(`should throw an error if resource id isn't defined`, () => {
+      let testError: Error;
+      try {
+        userResourceStore.inject({
+          firstName: 'Ivan',
+          lastName: 'Petrov',
+        } as User);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).not.to.be.undefined;
+      expect(testError.message).to.be.equal(`ResourceStore.injectOne: Resource must have ID property.`);
+    });
+
+    it(`should throw an error if resource id isn't a string or number`, () => {
+      let testError: Error;
+      try {
+        userResourceStore.inject({
+          id: null,
+          firstName: 'Ivan',
+          lastName: 'Petrov',
+        });
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).not.to.be.undefined;
+      expect(testError.message).to.be.equal(`ResourceStore.injectOne: "id" must be a string or number.`);
+    });
+
+    it('should allow to inject an array of resources', () => {
+      const injectedUsers = userResourceStore.inject([
+        {
+          id: 1,
+          firstName: 'Ivan',
+          lastName: 'Petrov',
+        },
+        {
+          id: 2,
+          firstName: 'Petr',
+          lastName: 'Ivanov',
+        },
+      ]);
+
+      expect(injectedUsers).to.be.an('array').and.to.have.lengthOf(2);
+      expect(injectedUsers[0].id).to.be.equal(1);
+      expect(injectedUsers[1].id).to.be.equal(2);
     });
   });
 
