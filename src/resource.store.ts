@@ -115,14 +115,19 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
   }
 
   /**
-   * Removes a resource from the store by the id. Returns removed element.
+   * Removes a resource from the store by the id. Returns removed resource.
    *
    * @param  {string|number} id
    * @return {ResourceType}
    */
-  removeOne (
+  removeById (
     id: string|number,
   ): ResourceType {
+    const idType = typeof id;
+    if (idType !== 'string' && idType !== 'number') {
+      throw new Error(`ResourceStore.removeById: "id" must be a string or number.`);
+    }
+
     const resourceIndex = Helper.findIndex(this.store, [ 'id', id ]);
 
     if (resourceIndex === -1) {
@@ -137,14 +142,14 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
   }
 
   /**
-   * Removes all resources from the store. Returns removed elements. If where condition is defined,
-   * method will remove only appropriate resources.
+   * Removes resources from the store and returns removed resources. If where condition is defined,
+   * method will remove only appropriate resources, otherwise method will remove all resources.
    *
    * @param  {Interfaces.WhereConditions<ResourceType>} [where]
    * @param  {boolean} [emitRemoveSignal=false]
    * @return {ResourceType[]}
    */
-  removeAll (
+  remove (
     where?: Interfaces.WhereConditions<ResourceType>,
     emitRemoveSignal: boolean = false,
   ): ResourceType[] {
