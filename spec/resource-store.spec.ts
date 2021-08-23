@@ -7,6 +7,7 @@ import { expect } from 'chai';
 import 'reflect-metadata';
 
 import { ResourceStore, Enums, Interfaces } from '../dist';
+import { SubscriptionManager, DoneAfterTickManager } from './core';
 
 describe(`ResourceStore`, () => {
 
@@ -1532,6 +1533,152 @@ describe(`ResourceStore`, () => {
 
       const allResources = userResourceStore.findAll();
       expect(allResources).to.have.lengthOf(1);
+    });
+  });
+
+  describe(`getInjectObserver`, () => {
+    interface User {
+      id: number;
+      firstName: string;
+    }
+    class UserResourceStore extends ResourceStore<User> {
+      public name = 'user';
+
+      public schema: Interfaces.Schema<User> = {
+        id: Enums.SchemaType.Number,
+        firstName: Enums.SchemaType.String,
+      };
+    }
+    let userResourceStore: UserResourceStore;
+
+    const subManager = new SubscriptionManager();
+
+    beforeEach(() => {
+      subManager.destroy();
+      userResourceStore = new UserResourceStore();
+    });
+
+    it(`shouldn't call subsciption callback if resource is injected before subscription`, (done) => {
+      const doneAfterTick = DoneAfterTickManager.create(done);
+
+      userResourceStore.inject({
+        id: 1,
+        firstName: 'Andrey',
+      });
+      const userResourceStore$ = userResourceStore.getInjectObserver()
+        .subscribe((user) => {
+          const tick = doneAfterTick.getTick();
+          if (tick === 0) {
+            expect(user.id).to.be.equal(2);
+            doneAfterTick.done();
+          }
+        });
+      subManager.subscribe(userResourceStore$);
+
+      userResourceStore.inject({
+        id: 2,
+        firstName: 'Artur',
+      });
+    });
+
+    it(`should call subsciption callback if resource is injected after subscription`, (done) => {
+      const doneAfterTick = DoneAfterTickManager.create(done);
+      const userResourceStore$ = userResourceStore.getInjectObserver()
+        .subscribe((user) => {
+          const tick = doneAfterTick.getTick();
+          if (tick === 0) {
+            expect(user.id).to.be.equal(1);
+            doneAfterTick.done();
+          }
+        });
+      subManager.subscribe(userResourceStore$);
+
+      userResourceStore.inject({
+        id: 1,
+        firstName: 'Andrey',
+      });
+    });
+
+    it(`should call subsciption callback after every inject`, (done) => {
+      const doneAfterTick = DoneAfterTickManager.create(done);
+      const userResourceStore$ = userResourceStore.getInjectObserver()
+        .subscribe((user) => {
+          const tick = doneAfterTick.getTick();
+          if (tick === 0) {
+            expect(user.id).to.be.equal(1);
+            return;
+          }
+
+          if (tick === 1) {
+            expect(user.id).to.be.equal(2);
+            doneAfterTick.done();
+          }
+        });
+      subManager.subscribe(userResourceStore$);
+
+      userResourceStore.inject({
+        id: 1,
+        firstName: 'Andrey',
+      });
+      doneAfterTick.nextTick();
+
+      userResourceStore.inject({
+        id: 2,
+        firstName: 'Artur',
+      });
+    });
+
+    it(`should call target subsciption callback only after inject of target resource`, (done) => {
+      const doneAfterTick = DoneAfterTickManager.create(done);
+      const userResourceStore$ = userResourceStore.getInjectObserver(2)
+        .subscribe((user) => {
+          const tick = doneAfterTick.getTick();
+          if (tick === 0) {
+            doneAfterTick.done(`Target subscription callback shouldn't be triggered on non-target resource`);
+            return;
+          }
+
+          if (tick === 1) {
+            expect(user.id).to.be.equal(2);
+            expect(user.firstName).to.be.equal(`Artur`);
+            return;
+          }
+
+          if (tick === 2) {
+            doneAfterTick.done(`Target subscription callback shouldn't be triggered on non-target resource`);
+            return;
+          }
+
+          if (tick === 3) {
+            expect(user.id).to.be.equal(2);
+            expect(user.firstName).to.be.equal(`Roma`);
+            doneAfterTick.done();
+          }
+        });
+      subManager.subscribe(userResourceStore$);
+
+      userResourceStore.inject({
+        id: 1,
+        firstName: 'Andrey',
+      });
+      doneAfterTick.nextTick();
+
+      userResourceStore.inject({
+        id: 2,
+        firstName: 'Artur',
+      });
+      doneAfterTick.nextTick();
+
+      userResourceStore.inject({
+        id: 3,
+        firstName: 'Alex',
+      });
+      doneAfterTick.nextTick();
+
+      userResourceStore.inject({
+        id: 2,
+        firstName: 'Roma',
+      });
     });
   });
 });
