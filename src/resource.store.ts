@@ -83,9 +83,12 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
    * @param  {ResourceType} resource
    * @return {void}
    */
-  inject <ResourceOrResources extends ResourceType | ResourceType[]> (
-    resourceOrResources: ResourceOrResources,
-  ): ResourceOrResources extends ResourceType ? ResourceType : ResourceType[];
+  inject (
+    resourceOrResources: ResourceType,
+  ): ResourceType;
+  inject (
+    resourceOrResources: ResourceType[],
+  ): ResourceType[];
   inject (
     resourceOrResources: ResourceType|ResourceType[],
   ): ResourceType|ResourceType[] {
