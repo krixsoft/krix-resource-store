@@ -61,6 +61,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
     let sjInjectResourceNotif = this.sjInjectResourcsNotifMap.get(resourceId);
     if (Helper.isNil(sjInjectResourceNotif) === true) {
       sjInjectResourceNotif = new Subject();
+      this.sjInjectResourcsNotifMap.set(resourceId, sjInjectResourceNotif);
     }
 
     return sjInjectResourceNotif.asObservable();
