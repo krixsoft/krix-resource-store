@@ -171,12 +171,12 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
    * method will remove only appropriate resources, otherwise method will remove all resources.
    *
    * @param  {Interfaces.WhereConditions<ResourceType>} [where]
-   * @param  {boolean} [emitRemoveSignal=false]
+   * @param  {boolean} [emitRemoveSignal=true]
    * @return {ResourceType[]}
    */
   remove (
     where?: Interfaces.WhereConditions<ResourceType>,
-    emitRemoveSignal: boolean = false,
+    emitRemoveSignal: boolean = true,
   ): ResourceType[] {
     if (Helper.isEmpty(this.store) === true) {
       return [];
