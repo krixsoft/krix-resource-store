@@ -1681,4 +1681,95 @@ describe(`ResourceStore`, () => {
       });
     });
   });
+
+  describe(`getRemoveObserver`, () => {
+    interface User {
+      id: number;
+      firstName: string;
+    }
+    class UserResourceStore extends ResourceStore<User> {
+      public name = 'user';
+
+      public schema: Interfaces.Schema<User> = {
+        id: Enums.SchemaType.Number,
+        firstName: Enums.SchemaType.String,
+      };
+    }
+    let userResourceStore: UserResourceStore;
+
+    const subManager = new SubscriptionManager();
+
+    beforeEach(() => {
+      subManager.destroy();
+      userResourceStore = new UserResourceStore();
+      userResourceStore.inject({
+        id: 1,
+        firstName: 'Andrey',
+      });
+      userResourceStore.inject({
+        id: 2,
+        firstName: 'Artur',
+      });
+      userResourceStore.inject({
+        id: 3,
+        firstName: 'Roma',
+      });
+    });
+
+    it(`should call subsciption callback if resource is removed via "removeById" logic`, (done) => {
+      const doneAfterTick = DoneAfterTickManager.create(done);
+      const userResourceStore$ = userResourceStore.getRemoveObserver()
+        .subscribe((user) => {
+          const tick = doneAfterTick.getTick();
+          if (tick === 0) {
+            expect(user.id).to.be.equal(2);
+            doneAfterTick.done();
+          }
+        });
+      subManager.subscribe(userResourceStore$);
+
+      userResourceStore.removeById(2);
+    });
+    it(`should call subsciption callback if resource is removed via "remove" logic`, (done) => {
+      const doneAfterTick = DoneAfterTickManager.create(done);
+      const userResourceStore$ = userResourceStore.getRemoveObserver()
+        .subscribe((user) => {
+          const tick = doneAfterTick.getTick();
+          if (tick === 0) {
+            expect(user.id).to.be.equal(3);
+            doneAfterTick.done();
+          }
+        });
+      subManager.subscribe(userResourceStore$);
+
+      userResourceStore.remove({
+        firstName: 'Roma',
+      });
+    });
+
+    it(`should call subsciption callback after every remove`, (done) => {
+      const doneAfterTick = DoneAfterTickManager.create(done);
+      const userResourceStore$ = userResourceStore.getRemoveObserver()
+        .subscribe((user) => {
+          const tick = doneAfterTick.getTick();
+          if (tick === 0) {
+            expect(user.id).to.be.equal(1);
+            return;
+          }
+
+          if (tick === 1) {
+            expect(user.id).to.be.equal(2);
+            doneAfterTick.done();
+          }
+        });
+      subManager.subscribe(userResourceStore$);
+
+      userResourceStore.removeById(1);
+      doneAfterTick.nextTick();
+
+      userResourceStore.remove({
+        id: 2,
+      });
+    });
+  });
 });
