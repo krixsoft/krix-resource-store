@@ -1,152 +1,88 @@
-**krix/module** - a lightweight library which helps to build module-based application. It's an independent part of Krix ecosystem and it's based on usage of the Dependency Injection pattern.
+**krix/resource-store** - a library which provides a high-level ORM with in-memory storage to manage collection-like data. It's an independent part of Krix ecosystem.
 
 # Installation
 ```
-npm install -S @krix/module reflect-metadata
+npm install -S @krix/resource-store
 ```
 
 # Introduction
 ## What for?
-Module-based application allows to implement a strong structed application in one uniform style and reduces threshold required to understand your application. Using Dependency Injection pattern allows to reduce a number of factory-oriented logic and provides a wide range of opportunities to create Dependencies different types.
+How to store users? Everybody knows `Redux` and uses it for a such issue. Redux-like libraries providers very simple interface and often developers implements "iteration", "observation" and etc logic manually. The more there are entities in your app, the more duplicated code you will do, the more complex your application will be. So... We present you a `resource-storage` library. 
 
 
 ## Concepts
-**Dependency** - a some entity which developer provides into DI-based module with an instruction how to create and get it.
+**Resource** - an object-like entity, for example User, Project, File and etc. 
 
-**DI-based module** - a package-implemented dependency which developer uses to define application dependencies in the module. This dependency provides an interface to create and get other dependencies. It's available for module-defined dependencies as a sub-dependency.
+**Schema** - the object, which represent every field of entity (name, age, createdAt and etc.), computed fields (firstName + lastName = fullName, roleId = isAdmin and etc.) and relations (author->book, user->project and etc.).
 
-**Sub-dependency** - a regular dependency which another dependency can request for its work.
+**Store** - js class, which extends ResourceStore abstract class and implements: storage name, schema and helper methods (optional). 
 
-Our module system allows to create next dependencies:
- - `Class` dependency - a regular class with Krix `@Dependency` decorator.
- - `UseClass` dependency - a regular class without Krix `@Dependency` decorator.
- - `UseValue` dependency - a value, which will be added to Krix module without any transformations.
- - `UseFactoryFunction` dependency - a regular function which will be called to create a some dependency.
- - `UseFactoryClass` dependency - a regular class with Krix `@Dependency` decorator which implements `build` method.
- - `UseExisting` dependency - a defined dependency which will be used instead of another dependency.
+**Store Name** - a unique name for the set of entities (resource-store), for example: "user", "project" and etc. It's used for relation logic.
 
 ## Setup
-At first you need to import `reflect-metadata` package in the application's entrypoint file. Example:
+At first you need to create a store defenition. Example:
 
 ```typescript
-// index.ts
-import 'reflect-metadata';
+// user.resource-store.ts
+import { ResourceStore, Enums } from '@krix/resource-store';
 
-// other code...
-```
-And enable `experimentalDecorators` and `emitDecoratorMetadata` options in your TS config. Example:
-```json
-{
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
-  },
+interface User {
+  id: number;
+  firstName: string;
+  age: number;
+  isAuthor: boolean;
+  createdAt: Date;
+}
+export class UserResourceStore extends ResourceStore<User> {
+  public name = 'user';
+
+  public schema: Interfaces.Schema<User> = {
+    id: Enums.SchemaType.Number,
+    firstName: Enums.SchemaType.String,
+    age: Enums.SchemaType.Number,
+    isAuthor: Enums.SchemaType.Boolean,
+    createdAt: Enums.SchemaType.Date,
+  };
 }
 ```
 
-After that you can create your first module. Example:
+Now, let's create an instance of the store and add first entities. Example:
 
 ```typescript
-// app.module.ts
-import { KxModule } from '@krix/module';
+// example.ts
+import { UserResourceStore } from './user.resource-store';
 
-const appModule = KxModule.init({
-  import: [],
-  dependencies: [
-  ],
-  export: [],
+const userResourceStore = new UserResourceStore();
+
+userResourceStore.inject({
+  id: 1,
+  firstName: 'Andrey',
+  age: 26,
+  isAuthor: true,
+  createdAt: new Date('2021-05-20T22:11:26.892Z'),
 });
-// other code...
-```
-
-Every module cosists of 3 section:
- - `dependencies` - the list of dependencies which are available in the module
- - `export` - the list of dependencies which other modules can request from this module. All export dependencies must be defined in `dependencies` section.
- - `import` - the list of external modules which provides some public dependencies.
-
-Now, let's create a simple Class dependency and request its instance.
-
-```typescript
-// app.module.ts
-import { KxModule, Dependency } from '@krix/module';
-
-@Dependency()
-class SimpleDependency {
-  test (): void {
-    console.log(`Hello World`);
-  }
-}
-
-const appModule = KxModule.init({
-  import: [],
-  dependencies: [
-    SimpleDependency,
-  ],
-  export: [],
+userResourceStore.inject({
+  id: 2,
+  firstName: 'Artur',
+  age: 24,
+  isAuthor: true,
+  createdAt: new Date('2021-05-22T14:47:12.762Z'),
 });
-
-async function bootstrap () {
-  const simpleDependency = await appModule.get<SimpleDependency>(SimpleDependency);
-  simpleDependency.test(); // Hello World
-  // other code...
-}
-
-bootstrap();
 ```
 
-And that's all! We've described a `SimpleDependency` class, defined it in `App` module and requested to create it.
-
-Now, let's complicate the code, create the complex dependency which will create a sub-dependency.
-
-
+We've stored 2 entities, now let's get one of them and remove second one.
 ```typescript
-// app.module.ts
-import { KxModule, Dependency } from '@krix/module';
+// example.ts
+const userResourceStore = new UserResourceStore();
 
-@Dependency()
-class SimpleDependency {
-  constructor () {
-    console.log(`Hello World Simple dependency`);
-  }
-
-  test (): void {
-    console.log(`Test simple dependency!`);
-  }
-}
-
-@Dependency()
-class ComplexDependency {
-  constructor (
-    public simpleDependency: SimpleDependency,
-  ) {
-    console.log(`Hello World Complex dependency`);
-  }
-
-  test (): void {
-    this.simpleDependency.test();
-    console.log(`Test complex dependency!`);
-  }
-}
-
-
-const appModule = KxModule.init({
-  import: [],
-  dependencies: [
-    SimpleDependency,
-    ComplexDependency,
-  ],
-  export: [],
+const userArture = userResourceStore.findOne({
+  firstName: 'Artur',
 });
+console.log(userArture); // User with id = 2
 
-async function bootstrap () {
-  const complexDependency = await appModule.get<ComplexDependency>(ComplexDependency);
-  // Hello World Simple dependency
-  // Hello World Complex dependency
-  this.complexDependency.test();
-  // Test simple dependency!
-  // Test complex dependency!
-  // other code...
-}
+userResourceStore.removeById(1);
+console.log(userResourceStore.size); // 1
 
-bootstrap();
 ```
+
+And that's all! We've created a resource-store for `User` entity, added 2 users, got one and removed second one.
