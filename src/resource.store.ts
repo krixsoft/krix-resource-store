@@ -45,6 +45,14 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
   }
 
   /**
+   * Size of the resource store.
+   */
+  get size (
+  ): number {
+    return this.store.length;
+  }
+
+  /**
    * Returns RxJS observable which gets signals with an injected resources. If resource id is defined, method
    * will get/create a Subject for this resource and create RxJS observable for it.
    *
