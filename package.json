@@ -1,7 +1,7 @@
 {
   "name": "@krix/resource-store",
   "version": "1.0.0",
-  "description": "Krix Resource Storage",
+  "description": "Krix Resource Store",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "repository": {
