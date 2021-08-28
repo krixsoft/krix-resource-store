@@ -1772,4 +1772,54 @@ describe(`ResourceStore`, () => {
       });
     });
   });
+
+  describe(`size`, () => {
+    interface User {
+      id: number;
+      firstName: string;
+    }
+    class UserResourceStore extends ResourceStore<User> {
+      public name = 'user';
+
+      public schema: Interfaces.Schema<User> = {
+        id: Enums.SchemaType.Number,
+        firstName: Enums.SchemaType.String,
+      };
+    }
+    let userResourceStore: UserResourceStore;
+
+    beforeEach(() => {
+      userResourceStore = new UserResourceStore();
+    });
+
+    it(`should increase the size of store after 'inject' operation`, () => {
+      expect(userResourceStore.size).to.be.equal(0);
+      userResourceStore.inject({
+        id: 1,
+        firstName: 'Andrey',
+      });
+      expect(userResourceStore.size).to.be.equal(1);
+      userResourceStore.inject({
+        id: 2,
+        firstName: 'Artur',
+      });
+      expect(userResourceStore.size).to.be.equal(2);
+    });
+
+    it(`should decrease the size of store after 'remove' operation`, () => {
+      userResourceStore.inject({
+        id: 1,
+        firstName: 'Andrey',
+      });
+      userResourceStore.inject({
+        id: 2,
+        firstName: 'Artur',
+      });
+      expect(userResourceStore.size).to.be.equal(2);
+      userResourceStore.removeById(1);
+      expect(userResourceStore.size).to.be.equal(1);
+      userResourceStore.removeById(2);
+      expect(userResourceStore.size).to.be.equal(0);
+    });
+  });
 });
