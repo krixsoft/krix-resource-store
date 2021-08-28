@@ -60,23 +60,71 @@ export interface FindOptions {
  * Where condition config for properties with a `number` type.
  */
 export interface NumberWhereConditions {
+  /**
+   * Resource's field stores any value from the passed array of numbers.
+   */
   'in': number[];
+  /**
+   * Resource's field doesn't store values from the passed array of numbers.
+   */
   '!in': number[];
 
+  /**
+   * Resource's field is equal to the passed number.
+   */
   '===': number;
+  /**
+   * Resource's field isn't equal to the passed number.
+   */
   '!==': number;
+  /**
+   * Resource's field is equal to the passed number or more than it.
+   */
   '>=': number;
+  /**
+   * Resource's field is more than the passed number.
+   */
   '>': number;
+  /**
+   * Resource's field is equal to the passed number or less than it.
+   */
   '<=': number;
+  /**
+   * Resource's field is less than the passed number.
+   */
   '<': number;
 
+  /**
+   * Resource's field is in the range from start up to end, but not including both ranges.
+   */
   '()': [ number, number ];
+  /**
+   * Resource's field is in the range from start up to, but not including, end.
+   */
   '[)': [ number, number ];
+  /**
+   * Resource's field is in the range from start but not including it, and up to end including it.
+   */
   '(]': [ number, number ];
+  /**
+   * Resource's field is in the range from start up to end, including both ranges.
+   */
   '[]': [ number, number ];
+  /**
+   * Resource's field isn't in the range from start up to end, but not including both ranges.
+   */
   '!()': [ number, number ];
+  /**
+   * Resource's field isn't in the range from start up to, but not including, end.
+   */
   '![)': [ number, number ];
+  /**
+   * Resource's field isn't in the range from start but not including it, and up to end including it.
+   */
   '!(]': [ number, number ];
+  /**
+   * Resource's field isn't in the range from start up to end, including both ranges.
+   */
   '![]': [ number, number ];
 }
 
@@ -84,7 +132,13 @@ export interface NumberWhereConditions {
  * Where condition config for properties with a `boolean` type.
  */
 export interface BooleanWhereConditions {
+  /**
+   * Resource's field is equal to the passed value.
+   */
   '===': boolean;
+  /**
+   * Resource's field isn't equal to the passed value.
+   */
   '!==': boolean;
 }
 
@@ -92,13 +146,31 @@ export interface BooleanWhereConditions {
  * Where condition config for properties with a `string` type.
  */
 export interface StringWhereConditions {
+  /**
+   * Resource's field stores any value from the passed array of strings.
+   */
   'in': string[];
+  /**
+   * Resource's field doesn't store values from the passed array of strings.
+   */
   '!in': string[];
 
+  /**
+   * Resource's field is equal to the passed string.
+   */
   '===': string;
+  /**
+   * Resource's field isn't equal to the passed string.
+   */
   '!==': string;
 
+  /**
+   * Resource's field looks like to the passed string|RegExp.
+   */
   'like': string | RegExp;
+  /**
+   * Resource's field doesn't look like to the passed string|RegExp.
+   */
   '!like': string | RegExp;
 }
 
@@ -106,23 +178,71 @@ export interface StringWhereConditions {
  * Where condition config for properties with a `date` type.
  */
 export interface DateWhereConditions {
+  /**
+   * Resource's field stores any value from the passed array of dates.
+   */
   'in': Date[];
+  /**
+   * Resource's field doesn't store values from the passed array of dates.
+   */
   '!in': Date[];
 
+  /**
+   * Resource's field is equal to the passed date.
+   */
   '===': Date;
+  /**
+   * Resource's field isn't equal to the passed date.
+   */
   '!==': Date;
+  /**
+   * Resource's field is equal to the passed date or more than it.
+   */
   '>=': Date;
+  /**
+   * Resource's field is more than the passed date.
+   */
   '>': Date;
+  /**
+   * Resource's field is equal to the passed date or less than it.
+   */
   '<=': Date;
+  /**
+   * Resource's field is less than the passed date.
+   */
   '<': Date;
 
+  /**
+   * Resource's field is in the range from start up to end, but not including both ranges.
+   */
   '()': [ Date, Date ];
+  /**
+   * Resource's field is in the range from start up to, but not including, end.
+   */
   '[)': [ Date, Date ];
+  /**
+   * Resource's field is in the range from start but not including it, and up to end including it.
+   */
   '(]': [ Date, Date ];
+  /**
+   * Resource's field is in the range from start up to end, including both ranges.
+   */
   '[]': [ Date, Date ];
+  /**
+   * Resource's field isn't in the range from start up to end, but not including both ranges.
+   */
   '!()': [ Date, Date ];
+  /**
+   * Resource's field isn't in the range from start up to, but not including, end.
+   */
   '![)': [ Date, Date ];
+  /**
+   * Resource's field isn't in the range from start but not including it, and up to end including it.
+   */
   '!(]': [ Date, Date ];
+  /**
+   * Resource's field isn't in the range from start up to end, including both ranges.
+   */
   '![]': [ Date, Date ];
 }
 

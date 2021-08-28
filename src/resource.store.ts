@@ -86,7 +86,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
   }
 
   /**
-   * Injects the resource or resources to the storage. If there is the resource with the same
+   * Injects the resource or resources to the store. If there is the resource with the same
    * id, it will be replaced.
    *
    * @param  {ResourceType} resource
@@ -114,7 +114,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
   }
 
   /**
-   * Sets the resource to storage. If there is the resource with the same id, it will be replaced.
+   * Sets the resource to store. If there is the resource with the same id, it will be replaced.
    *
    * @param  {ResourceType} resource
    * @return {ResourceType}
@@ -264,12 +264,10 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
    * return NULL.
    *
    * @param  {Partial<ResourceType>} where
-   * @param  {Interfaces.FindOptions} [options]
    * @return {ResourceType}
    */
   findOne (
     where: Interfaces.WhereConditions<ResourceType>,
-    options?: Interfaces.FindOptions,
   ): ResourceType {
     const foundResource = Helper.find(this.store, (resource) => {
       return this.whereFilterHelper.filterByCondition(this.schema, resource, where);
@@ -282,16 +280,14 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
   }
 
   /**
-   * Finds a resource in the store by the 'where' condition. If resource isn't found, method will
-   * return NULL.
+   * Finds resources in the store by the 'where' condition. If resource isn't found, method will
+   * return an empty array.
    *
    * @param  {Partial<ResourceType>} where
-   * @param  {Interfaces.FindOptions} [options]
-   * @return {ResourceType}
+   * @return {ResourceType[]}
    */
   findAll (
     where?: Interfaces.WhereConditions<ResourceType>,
-    options?: Interfaces.FindOptions,
   ): ResourceType[] {
     const foundResources = Helper.isNil(where) === true
       ? [ ...this.store ]
