@@ -4,7 +4,7 @@ import { Enums, Helper } from './shared';
 export class WhereFilterHelper {
 
   /**
-   * Returns `true` if resource correspons to `where` condition.
+   * Returns `true` if resource corresponds to `where` condition.
    *
    * @param  {Interfaces.Schema<ResourceType>} schema
    * @param  {ResourceType} resource

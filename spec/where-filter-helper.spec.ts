@@ -216,7 +216,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result3).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           age: { '>': null },
@@ -255,7 +255,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result3).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           age: { '>=': null },
@@ -294,7 +294,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result3).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           age: { '<': null },
@@ -333,7 +333,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result3).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           age: { '<=': null },
@@ -472,7 +472,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.false;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           age: { '()': [ null, 35 ] },
@@ -523,7 +523,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           age: { '!()': [ null, 35 ] },
@@ -574,7 +574,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.false;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           age: { '[)': [ null, 35 ] },
@@ -625,7 +625,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           age: { '![)': [ null, 35 ] },
@@ -676,7 +676,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.false;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           age: { '(]': [ null, 35 ] },
@@ -727,7 +727,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           age: { '!(]': [ null, 35 ] },
@@ -778,7 +778,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.false;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           age: { '[]': [ null, 35 ] },
@@ -829,7 +829,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           age: { '![]': [ null, 35 ] },
@@ -980,7 +980,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result3).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           createdAt: { '>': null },
@@ -1019,7 +1019,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result3).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           createdAt: { '>=': null },
@@ -1058,7 +1058,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result3).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           createdAt: { '<': null },
@@ -1097,7 +1097,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result3).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           createdAt: { '<=': null },
@@ -1236,7 +1236,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.false;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           createdAt: { '()': [ null, new Date('2021-05-30T22:11:26.892Z') ] },
@@ -1287,7 +1287,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           createdAt: { '!()': [ null, new Date('2021-05-30T22:11:26.892Z') ] },
@@ -1338,7 +1338,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.false;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           createdAt: { '[)': [ null, new Date('2021-05-30T22:11:26.892Z') ] },
@@ -1389,7 +1389,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           createdAt: { '![)': [ null, new Date('2021-05-30T22:11:26.892Z') ] },
@@ -1440,7 +1440,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.false;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           createdAt: { '(]': [ null, new Date('2021-05-30T22:11:26.892Z') ] },
@@ -1491,7 +1491,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           createdAt: { '!(]': [ null, new Date('2021-05-30T22:11:26.892Z') ] },
@@ -1542,7 +1542,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.false;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           createdAt: { '[]': [ null, new Date('2021-05-30T22:11:26.892Z') ] },
@@ -1593,7 +1593,7 @@ describe(`WhereFilterHelper`, () => {
       });
       expect(result6).to.be.true;
 
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           createdAt: { '![]': [ null, new Date('2021-05-30T22:11:26.892Z') ] },
@@ -2052,7 +2052,7 @@ describe(`WhereFilterHelper`, () => {
   describe(`Params tests`, () => {
 
     it(`should throw an error if field has unsupported type`, () => {
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, {
           friend: user,
@@ -2087,7 +2087,7 @@ describe(`WhereFilterHelper`, () => {
     });
 
     it(`should throw an error if where condition is "nil" or empty`, () => {
-      let testError: Error;
+      let testError: any;
       try {
         whereFilterHelper.filterByCondition(schema, user, null);
       } catch (error) {

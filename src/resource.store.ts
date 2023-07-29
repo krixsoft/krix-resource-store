@@ -10,20 +10,20 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
   /**
    * Store name.
    */
-  public abstract readonly name: string;
+  public name (): string { throw new Error(`Name is required`); }
   /**
    * Store name.
    */
-  public abstract readonly schema: Interfaces.Schema<ResourceType>;
+  public readonly schema: Interfaces.Schema<ResourceType>;
   /**
    * Contains all registered resource stores for `relation` logic.
    * FYI: This structure is managed by external provider.
    */
-  public relationMap: Map<string, ResourceStore<any>>;
+  static relationMap: Map<string, ResourceStore<any>> = new Map();
 
   private store: ResourceType[];
 
-  private sjInjectResourcsNotifMap: Map<string|number, Subject<ResourceType>>;
+  private sjInjectResourcesNotifMap: Map<string|number, Subject<ResourceType>>;
   /**
    * RxJS observables.
    */
@@ -36,7 +36,8 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
   ) {
     this.store = [];
 
-    this.sjInjectResourcsNotifMap = new Map();
+    ResourceStore.relationMap.set(this.name(), this);
+    this.sjInjectResourcesNotifMap = new Map();
 
     this.sjInjectNotif = new Subject();
     this.sjRemoveNotif = new Subject();
@@ -66,10 +67,10 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
       return this.sjInjectNotif.asObservable();
     }
 
-    let sjInjectResourceNotif = this.sjInjectResourcsNotifMap.get(resourceId);
+    let sjInjectResourceNotif = this.sjInjectResourcesNotifMap.get(resourceId);
     if (Helper.isNil(sjInjectResourceNotif) === true) {
       sjInjectResourceNotif = new Subject();
-      this.sjInjectResourcsNotifMap.set(resourceId, sjInjectResourceNotif);
+      this.sjInjectResourcesNotifMap.set(resourceId, sjInjectResourceNotif);
     }
 
     return sjInjectResourceNotif.asObservable();
@@ -142,7 +143,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
 
     this.sjInjectNotif.next(transformedResource);
 
-    const sjInjectResourceNotif = this.sjInjectResourcsNotifMap.get(resource.id);
+    const sjInjectResourceNotif = this.sjInjectResourcesNotifMap.get(resource.id);
     if (Helper.isNil(sjInjectResourceNotif) === false) {
       sjInjectResourceNotif.next(transformedResource);
     }
@@ -229,13 +230,13 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
   private removeInjectNotificationSubject (
     resourceId: string | number,
   ) {
-    const sjInjectResourceNotif = this.sjInjectResourcsNotifMap.get(resourceId);
+    const sjInjectResourceNotif = this.sjInjectResourcesNotifMap.get(resourceId);
     if (Helper.isNil(sjInjectResourceNotif) === true) {
       return;
     }
 
     sjInjectResourceNotif.complete();
-    this.sjInjectResourcsNotifMap.delete(resourceId);
+    this.sjInjectResourcesNotifMap.delete(resourceId);
   }
 
   /**
@@ -316,14 +317,14 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
 
       if (typeof schemaField !== 'object') {
         const fieldValue = resource[fieldName];
-        const transformedFieldValue = this.transofrmValueToSimpleField(schemaField, fieldValue);
+        const transformedFieldValue = this.transformValueToSimpleField(schemaField, fieldValue);
         resourceBySchema[fieldName] = transformedFieldValue;
         continue;
       }
 
       if (schemaField.type !== Enums.SchemaType.Computed && schemaField.type !== Enums.SchemaType.Relation) {
         const fieldValue = resource[fieldName];
-        const transformedFieldValue = this.transofrmValueToSimpleField(schemaField.type, fieldValue);
+        const transformedFieldValue = this.transformValueToSimpleField(schemaField.type, fieldValue);
         resourceBySchema[fieldName] = transformedFieldValue;
         continue;
       }
@@ -362,7 +363,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
    * @param  {Interfaces.SimpleSchemaField} schemaField
    * @param  {} fieldValue
    */
-  private transofrmValueToSimpleField (
+  private transformValueToSimpleField (
     schemaField: Interfaces.SimpleSchemaField,
     fieldValue: any,
   ): number|string|boolean|Date|null|undefined {
@@ -390,7 +391,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
       return fieldValue;
     }
 
-    throw new Error(`SchemaService.transofrmBaseField: Unknown schema type: ${JSON.stringify(schemaField)}`);
+    throw new Error(`SchemaService.transformBaseField: Unknown schema type: ${JSON.stringify(schemaField)}`);
   }
 
   /**
@@ -404,12 +405,7 @@ export abstract class ResourceStore <ResourceType extends Interfaces.BaseResourc
     sourceResource: ResourceType,
     includeField: Interfaces.RelationBelongsToSchemaField<ResourceType> | Interfaces.RelationHasSchemaField,
   ): TargetResourceType|TargetResourceType[] {
-    if (Helper.isNil(this.relationMap) === true) {
-      throw new Error(`ResourceStore.getIncludeValue: `
-        + `We can't find a map with resource stores in the resource store (${this.name}).`);
-    }
-
-    const resourceStore = this.relationMap.get(includeField.resource);
+    const resourceStore = ResourceStore.relationMap.get(includeField.resource);
 
     if (Helper.isNil(resourceStore) === true) {
       throw new Error(`ResourceStore.getIncludeValue: `
