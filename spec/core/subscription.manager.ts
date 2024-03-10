@@ -8,8 +8,7 @@ export class SubscriptionManager {
    *
    * @return {void}
    */
-  destroy (
-  ): void {
+  destroy(): void {
     this.subscription.forEach((data) => {
       if (typeof data?.unsubscribe !== 'function') {
         return;
@@ -25,9 +24,7 @@ export class SubscriptionManager {
    * @param {Subscription} sub
    * @return {void}
    */
-  subscribe (
-    sub: Rx.Subscription,
-  ): void {
+  subscribe(sub: Rx.Subscription): void {
     this.subscription.add(sub);
   }
 }

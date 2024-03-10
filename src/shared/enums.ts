@@ -1,4 +1,3 @@
-
 export enum RelationType {
   BelongsToOne = 'belongs-to-one',
   BelongsToMany = 'belongs-to-many',

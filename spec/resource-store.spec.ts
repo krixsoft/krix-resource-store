@@ -10,15 +10,16 @@ import { ResourceStore, Enums, Interfaces } from '../dist';
 import { SubscriptionManager, DoneAfterTickManager } from './core';
 
 describe(`ResourceStore`, () => {
-
   it(`should create an instance of Resource store`, () => {
     interface User {
-      firstName: string
-      lastName: string
+      firstName: string;
+      lastName: string;
     }
 
     class UserResourceStore extends ResourceStore<User> {
-      public name () { return 'user'; }
+      public name() {
+        return 'user';
+      }
 
       public schema: Interfaces.Schema<User> = {
         firstName: {
@@ -39,11 +40,13 @@ describe(`ResourceStore`, () => {
   describe(`inject`, () => {
     interface User {
       id: number;
-      firstName: string
-      lastName: string
+      firstName: string;
+      lastName: string;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name () { return 'user'; }
+      public name() {
+        return 'user';
+      }
 
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
@@ -151,7 +154,7 @@ describe(`ResourceStore`, () => {
       }
 
       expect(testError).not.to.be.undefined;
-      expect(testError.message).to.be.equal(`ResourceStore.injectOne: Resource must have ID property.`);
+      expect(testError.message).to.be.equal(`ResourceStore.injectOne: Resource must have uniq key (id).`);
     });
 
     it(`should throw an error if resource id isn't a string or number`, () => {
@@ -167,7 +170,7 @@ describe(`ResourceStore`, () => {
       }
 
       expect(testError).not.to.be.undefined;
-      expect(testError.message).to.be.equal(`ResourceStore.injectOne: "id" must be a string or number.`);
+      expect(testError.message).to.be.equal(`ResourceStore.injectOne: Uniq key (id) must be a string or number.`);
     });
 
     it('should allow to inject an array of resources', () => {
@@ -196,7 +199,9 @@ describe(`ResourceStore`, () => {
         age: number;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           age: Enums.SchemaType.Number,
@@ -216,7 +221,9 @@ describe(`ResourceStore`, () => {
         name: string;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           name: Enums.SchemaType.String,
@@ -237,7 +244,9 @@ describe(`ResourceStore`, () => {
         hasHome: boolean;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           hasHome: Enums.SchemaType.Boolean,
@@ -258,7 +267,9 @@ describe(`ResourceStore`, () => {
         birthday: Date;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           birthday: Enums.SchemaType.Date,
@@ -280,7 +291,9 @@ describe(`ResourceStore`, () => {
         birthday: Date;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           birthday: Enums.SchemaType.Date,
@@ -295,7 +308,7 @@ describe(`ResourceStore`, () => {
       const injectedUser = userResourceStore.inject(user);
 
       expect(injectedUser.birthday).to.be.an.instanceOf(Date);
-      expect(injectedUser.birthday.toISOString()).to.be.equal((new Date(isoString)).toISOString());
+      expect(injectedUser.birthday.toISOString()).to.be.equal(new Date(isoString).toISOString());
     });
 
     it(`should allow to inject resource with simple "Object" field`, () => {
@@ -303,7 +316,9 @@ describe(`ResourceStore`, () => {
         metainfo: object;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           metainfo: Enums.SchemaType.Object,
@@ -326,7 +341,9 @@ describe(`ResourceStore`, () => {
         age: number;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           age: {
@@ -348,7 +365,9 @@ describe(`ResourceStore`, () => {
         name: string;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           name: {
@@ -371,7 +390,9 @@ describe(`ResourceStore`, () => {
         hasHome: boolean;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           hasHome: {
@@ -394,7 +415,9 @@ describe(`ResourceStore`, () => {
         birthday: Date;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           birthday: {
@@ -418,7 +441,9 @@ describe(`ResourceStore`, () => {
         birthday: Date;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           birthday: {
@@ -435,7 +460,7 @@ describe(`ResourceStore`, () => {
       const injectedUser = userResourceStore.inject(user);
 
       expect(injectedUser.birthday).to.be.an.instanceOf(Date);
-      expect(injectedUser.birthday.toISOString()).to.be.equal((new Date(isoString)).toISOString());
+      expect(injectedUser.birthday.toISOString()).to.be.equal(new Date(isoString).toISOString());
     });
 
     it(`should allow to inject resource with complex "Object" field`, () => {
@@ -443,7 +468,9 @@ describe(`ResourceStore`, () => {
         metainfo: object;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           metainfo: {
@@ -470,7 +497,9 @@ describe(`ResourceStore`, () => {
         fullName?: string;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           firstName: Enums.SchemaType.String,
@@ -500,7 +529,9 @@ describe(`ResourceStore`, () => {
         randomValue?: number;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           id: Enums.SchemaType.Number,
@@ -527,7 +558,9 @@ describe(`ResourceStore`, () => {
         role?: number;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           id: Enums.SchemaType.Number,
@@ -559,7 +592,9 @@ describe(`ResourceStore`, () => {
         friend?: User;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name () { return 'user'; }
+        public name() {
+          return 'user';
+        }
 
         public schema: Interfaces.Schema<User> = {
           id: Enums.SchemaType.Number,
@@ -589,7 +624,9 @@ describe(`ResourceStore`, () => {
         friend?: UserWithFriend;
       }
       class UserWithFriendResourceStore extends ResourceStore<UserWithFriend> {
-        public name () { return 'userWithFriend'; }
+        public name() {
+          return 'userWithFriend';
+        }
 
         public schema: Interfaces.Schema<UserWithFriend> = {
           id: Enums.SchemaType.Number,
@@ -609,7 +646,9 @@ describe(`ResourceStore`, () => {
         name: string;
       }
       class RoleStore extends ResourceStore<Role> {
-        public name () { return 'role'; }
+        public name() {
+          return 'role';
+        }
 
         public schema: Interfaces.Schema<Role> = {
           id: Enums.SchemaType.Number,
@@ -624,7 +663,9 @@ describe(`ResourceStore`, () => {
         role?: UserWithRole;
       }
       class UserWithRoleResourceStore extends ResourceStore<UserWithRole> {
-        public name () { return 'userWithRole'; }
+        public name() {
+          return 'userWithRole';
+        }
 
         public schema: Interfaces.Schema<UserWithRole> = {
           id: Enums.SchemaType.Number,
@@ -708,7 +749,9 @@ describe(`ResourceStore`, () => {
         friends?: UserWithFriends[];
       }
       class UserWithFriendsResourceStore extends ResourceStore<UserWithFriends> {
-        public name () { return 'userWithFriends'; }
+        public name() {
+          return 'userWithFriends';
+        }
 
         public schema: Interfaces.Schema<UserWithFriends> = {
           id: Enums.SchemaType.Number,
@@ -728,7 +771,9 @@ describe(`ResourceStore`, () => {
         name: string;
       }
       class RoleStore extends ResourceStore<Role> {
-        public name () { return 'role'; }
+        public name() {
+          return 'role';
+        }
 
         public schema: Interfaces.Schema<Role> = {
           id: Enums.SchemaType.Number,
@@ -743,7 +788,9 @@ describe(`ResourceStore`, () => {
         roles?: UserWithRoles[];
       }
       class UserWithRolesResourceStore extends ResourceStore<UserWithRoles> {
-        public name () { return 'userWithRoles'; }
+        public name() {
+          return 'userWithRoles';
+        }
 
         public schema: Interfaces.Schema<UserWithRoles> = {
           id: Enums.SchemaType.Number,
@@ -785,7 +832,7 @@ describe(`ResourceStore`, () => {
       it(`should return empty array if relations not found in the related store for one store`, () => {
         const user = userWithFriendsResourceStore.inject({
           id: 1,
-          friendsIds: [ 3, 2 ],
+          friendsIds: [3, 2],
         });
 
         expect(user.friends).to.be.an('array').that.is.empty;
@@ -794,7 +841,7 @@ describe(`ResourceStore`, () => {
       it(`should return related resources (link to resources) for one store`, () => {
         const user1 = userWithFriendsResourceStore.inject({
           id: 1,
-          friendsIds: [ 3, 2 ],
+          friendsIds: [3, 2],
         });
         const user2 = userWithFriendsResourceStore.inject({
           id: 2,
@@ -814,7 +861,7 @@ describe(`ResourceStore`, () => {
       it(`should return empty array if relation not found in the related store for two stores`, () => {
         const user = userWithRolesResourceStore.inject({
           id: 1,
-          rolesIds: [ 1 ],
+          rolesIds: [1],
         });
 
         expect(user.roles).to.be.an('array').that.is.empty;
@@ -831,7 +878,7 @@ describe(`ResourceStore`, () => {
         });
         const user1 = userWithRolesResourceStore.inject({
           id: 1,
-          rolesIds: [ 1, 2 ],
+          rolesIds: [1, 2],
         });
 
         const roles = user1.roles;
@@ -848,7 +895,9 @@ describe(`ResourceStore`, () => {
         friend?: UserWithFriend;
       }
       class UserWithFriendResourceStore extends ResourceStore<UserWithFriend> {
-        public name () { return 'userWithFriend'; }
+        public name() {
+          return 'userWithFriend';
+        }
 
         public schema: Interfaces.Schema<UserWithFriend> = {
           id: Enums.SchemaType.Number,
@@ -869,7 +918,9 @@ describe(`ResourceStore`, () => {
         authorId: number;
       }
       class BookStore extends ResourceStore<Book> {
-        public name () { return 'book'; }
+        public name() {
+          return 'book';
+        }
 
         public schema: Interfaces.Schema<Book> = {
           id: Enums.SchemaType.Number,
@@ -884,7 +935,9 @@ describe(`ResourceStore`, () => {
         book?: UserWithBook;
       }
       class UserWithBookResourceStore extends ResourceStore<UserWithBook> {
-        public name () { return 'userWithBook'; }
+        public name() {
+          return 'userWithBook';
+        }
 
         public schema: Interfaces.Schema<UserWithBook> = {
           id: Enums.SchemaType.Number,
@@ -971,7 +1024,9 @@ describe(`ResourceStore`, () => {
         friends?: UserWithFriends[];
       }
       class UserWithFriendsResourceStore extends ResourceStore<UserWithFriends> {
-        public name () { return 'userWithFriends'; }
+        public name() {
+          return 'userWithFriends';
+        }
 
         public schema: Interfaces.Schema<UserWithFriends> = {
           id: Enums.SchemaType.Number,
@@ -992,7 +1047,9 @@ describe(`ResourceStore`, () => {
         authorId: number;
       }
       class BookStore extends ResourceStore<Book> {
-        public name () { return 'book'; }
+        public name() {
+          return 'book';
+        }
 
         public schema: Interfaces.Schema<Book> = {
           id: Enums.SchemaType.Number,
@@ -1007,7 +1064,9 @@ describe(`ResourceStore`, () => {
         books?: UserWithBooks[];
       }
       class UserWithRolesResourceStore extends ResourceStore<UserWithBooks> {
-        public name () { return 'userWithBooks'; }
+        public name() {
+          return 'userWithBooks';
+        }
 
         public schema: Interfaces.Schema<UserWithBooks> = {
           id: Enums.SchemaType.Number,
@@ -1122,7 +1181,9 @@ describe(`ResourceStore`, () => {
       id: number;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name () { return 'user'; }
+      public name() {
+        return 'user';
+      }
 
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
@@ -1163,7 +1224,9 @@ describe(`ResourceStore`, () => {
       createdAt: Date;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name () { return 'user'; }
+      public name() {
+        return 'user';
+      }
 
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
@@ -1224,7 +1287,9 @@ describe(`ResourceStore`, () => {
       createdAt: Date;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name () { return 'user'; }
+      public name() {
+        return 'user';
+      }
 
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
@@ -1283,7 +1348,9 @@ describe(`ResourceStore`, () => {
       id: number;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name () { return 'user'; }
+      public name() {
+        return 'user';
+      }
 
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
@@ -1330,7 +1397,9 @@ describe(`ResourceStore`, () => {
       createdAt: Date;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name () { return 'user'; }
+      public name() {
+        return 'user';
+      }
 
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
@@ -1422,7 +1491,9 @@ describe(`ResourceStore`, () => {
       firstName: string;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name () { return 'user'; }
+      public name() {
+        return 'user';
+      }
 
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
@@ -1445,14 +1516,13 @@ describe(`ResourceStore`, () => {
         id: 1,
         firstName: 'Andrey',
       });
-      const userResourceStore$ = userResourceStore.getInjectObserver()
-        .subscribe((user) => {
-          const tick = doneAfterTick.getTick();
-          if (tick === 0) {
-            expect(user.id).to.be.equal(2);
-            doneAfterTick.done();
-          }
-        });
+      const userResourceStore$ = userResourceStore.getInjectObserver().subscribe((user) => {
+        const tick = doneAfterTick.getTick();
+        if (tick === 0) {
+          expect(user.id).to.be.equal(2);
+          doneAfterTick.done();
+        }
+      });
       subManager.subscribe(userResourceStore$);
 
       userResourceStore.inject({
@@ -1463,14 +1533,13 @@ describe(`ResourceStore`, () => {
 
     it(`should call subsciption callback if resource is injected after subscription`, (done) => {
       const doneAfterTick = DoneAfterTickManager.create(done);
-      const userResourceStore$ = userResourceStore.getInjectObserver()
-        .subscribe((user) => {
-          const tick = doneAfterTick.getTick();
-          if (tick === 0) {
-            expect(user.id).to.be.equal(1);
-            doneAfterTick.done();
-          }
-        });
+      const userResourceStore$ = userResourceStore.getInjectObserver().subscribe((user) => {
+        const tick = doneAfterTick.getTick();
+        if (tick === 0) {
+          expect(user.id).to.be.equal(1);
+          doneAfterTick.done();
+        }
+      });
       subManager.subscribe(userResourceStore$);
 
       userResourceStore.inject({
@@ -1481,19 +1550,18 @@ describe(`ResourceStore`, () => {
 
     it(`should call subsciption callback after every inject`, (done) => {
       const doneAfterTick = DoneAfterTickManager.create(done);
-      const userResourceStore$ = userResourceStore.getInjectObserver()
-        .subscribe((user) => {
-          const tick = doneAfterTick.getTick();
-          if (tick === 0) {
-            expect(user.id).to.be.equal(1);
-            return;
-          }
+      const userResourceStore$ = userResourceStore.getInjectObserver().subscribe((user) => {
+        const tick = doneAfterTick.getTick();
+        if (tick === 0) {
+          expect(user.id).to.be.equal(1);
+          return;
+        }
 
-          if (tick === 1) {
-            expect(user.id).to.be.equal(2);
-            doneAfterTick.done();
-          }
-        });
+        if (tick === 1) {
+          expect(user.id).to.be.equal(2);
+          doneAfterTick.done();
+        }
+      });
       subManager.subscribe(userResourceStore$);
 
       userResourceStore.inject({
@@ -1510,31 +1578,30 @@ describe(`ResourceStore`, () => {
 
     it(`should call target subscription callback only after inject of target resource`, (done) => {
       const doneAfterTick = DoneAfterTickManager.create(done);
-      const userResourceStore$ = userResourceStore.getInjectObserver(2)
-        .subscribe((user) => {
-          const tick = doneAfterTick.getTick();
-          if (tick === 0) {
-            doneAfterTick.done(`Target subscription callback shouldn't be triggered on non-target resource`);
-            return;
-          }
+      const userResourceStore$ = userResourceStore.getInjectObserver({ id: 2 }).subscribe((user) => {
+        const tick = doneAfterTick.getTick();
+        if (tick === 0) {
+          doneAfterTick.done(`Target subscription callback shouldn't be triggered on non-target resource`);
+          return;
+        }
 
-          if (tick === 1) {
-            expect(user.id).to.be.equal(2);
-            expect(user.firstName).to.be.equal(`Artur`);
-            return;
-          }
+        if (tick === 1) {
+          expect(user.id).to.be.equal(2);
+          expect(user.firstName).to.be.equal(`Artur`);
+          return;
+        }
 
-          if (tick === 2) {
-            doneAfterTick.done(`Target subscription callback shouldn't be triggered on non-target resource`);
-            return;
-          }
+        if (tick === 2) {
+          doneAfterTick.done(`Target subscription callback shouldn't be triggered on non-target resource`);
+          return;
+        }
 
-          if (tick === 3) {
-            expect(user.id).to.be.equal(2);
-            expect(user.firstName).to.be.equal(`Roma`);
-            doneAfterTick.done();
-          }
-        });
+        if (tick === 3) {
+          expect(user.id).to.be.equal(2);
+          expect(user.firstName).to.be.equal(`Roma`);
+          doneAfterTick.done();
+        }
+      });
       subManager.subscribe(userResourceStore$);
 
       userResourceStore.inject({
@@ -1568,7 +1635,9 @@ describe(`ResourceStore`, () => {
       firstName: string;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name () { return 'user'; }
+      public name() {
+        return 'user';
+      }
 
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
@@ -1598,28 +1667,26 @@ describe(`ResourceStore`, () => {
 
     it(`should call subsciption callback if resource is removed via "removeById" logic`, (done) => {
       const doneAfterTick = DoneAfterTickManager.create(done);
-      const userResourceStore$ = userResourceStore.getRemoveObserver()
-        .subscribe((user) => {
-          const tick = doneAfterTick.getTick();
-          if (tick === 0) {
-            expect(user.id).to.be.equal(2);
-            doneAfterTick.done();
-          }
-        });
+      const userResourceStore$ = userResourceStore.getRemoveObserver().subscribe((user) => {
+        const tick = doneAfterTick.getTick();
+        if (tick === 0) {
+          expect(user.id).to.be.equal(2);
+          doneAfterTick.done();
+        }
+      });
       subManager.subscribe(userResourceStore$);
 
       userResourceStore.removeById(2);
     });
     it(`should call subsciption callback if resource is removed via "remove" logic`, (done) => {
       const doneAfterTick = DoneAfterTickManager.create(done);
-      const userResourceStore$ = userResourceStore.getRemoveObserver()
-        .subscribe((user) => {
-          const tick = doneAfterTick.getTick();
-          if (tick === 0) {
-            expect(user.id).to.be.equal(3);
-            doneAfterTick.done();
-          }
-        });
+      const userResourceStore$ = userResourceStore.getRemoveObserver().subscribe((user) => {
+        const tick = doneAfterTick.getTick();
+        if (tick === 0) {
+          expect(user.id).to.be.equal(3);
+          doneAfterTick.done();
+        }
+      });
       subManager.subscribe(userResourceStore$);
 
       userResourceStore.remove({
@@ -1629,19 +1696,18 @@ describe(`ResourceStore`, () => {
 
     it(`should call subsciption callback after every remove`, (done) => {
       const doneAfterTick = DoneAfterTickManager.create(done);
-      const userResourceStore$ = userResourceStore.getRemoveObserver()
-        .subscribe((user) => {
-          const tick = doneAfterTick.getTick();
-          if (tick === 0) {
-            expect(user.id).to.be.equal(1);
-            return;
-          }
+      const userResourceStore$ = userResourceStore.getRemoveObserver().subscribe((user) => {
+        const tick = doneAfterTick.getTick();
+        if (tick === 0) {
+          expect(user.id).to.be.equal(1);
+          return;
+        }
 
-          if (tick === 1) {
-            expect(user.id).to.be.equal(2);
-            doneAfterTick.done();
-          }
-        });
+        if (tick === 1) {
+          expect(user.id).to.be.equal(2);
+          doneAfterTick.done();
+        }
+      });
       subManager.subscribe(userResourceStore$);
 
       userResourceStore.removeById(1);
@@ -1659,7 +1725,9 @@ describe(`ResourceStore`, () => {
       firstName: string;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name () { return 'user'; }
+      public name() {
+        return 'user';
+      }
 
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,

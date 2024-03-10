@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call  */
+const ESLintPlugin = require('eslint-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
 //   .BundleAnalyzerPlugin;
@@ -23,21 +24,13 @@ module.exports = {
           configFile: `tsconfig.prod.json`,
         },
       },
-      {
-        enforce: `pre`,
-        test: /\.tsx?$/,
-        loader: `eslint-loader`,
-        options: {
-          configFile: `./.eslintrc.js`,
-        },
-        exclude: /node_modules/,
-      },
     ],
   },
   resolve: {
     extensions: [ `.ts`, `.tsx`, `.js` ],
   },
   plugins: [
+    new ESLintPlugin(),
     // new BundleAnalyzerPlugin(),
   ],
   optimization: {

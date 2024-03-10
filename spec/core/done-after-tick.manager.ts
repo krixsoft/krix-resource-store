@@ -5,15 +5,13 @@ export class DoneAfterTickManager {
   private doneFunctionIsCalled: boolean;
   private tick: number;
 
-  static create (
-    doneFunction: DoneFunction,
-  ): DoneAfterTickManager {
+  static create(doneFunction: DoneFunction): DoneAfterTickManager {
     const inst = new DoneAfterTickManager();
     inst.setDoneFunction(doneFunction);
     return inst;
   }
 
-  constructor () {
+  constructor() {
     this.tick = 0;
   }
 
@@ -23,9 +21,7 @@ export class DoneAfterTickManager {
    * @param  {DoneFunction} doneFunction
    * @return {void}
    */
-  setDoneFunction (
-    doneFunction: DoneFunction,
-  ): void {
+  setDoneFunction(doneFunction: DoneFunction): void {
     this.doneFunction = doneFunction;
   }
 
@@ -34,8 +30,7 @@ export class DoneAfterTickManager {
    *
    * @return {void}
    */
-  nextTick (
-  ): void {
+  nextTick(): void {
     if (this.doneFunctionIsCalled === true) {
       throw new Error(`Something went wrong. You have alredy call 'done' function.`);
     }
@@ -48,8 +43,7 @@ export class DoneAfterTickManager {
    *
    * @return {number}
    */
-  getTick (
-  ): number {
+  getTick(): number {
     if (this.doneFunctionIsCalled === true) {
       return -1;
     }
@@ -63,9 +57,7 @@ export class DoneAfterTickManager {
    * @param  {string} error
    * @return {number}
    */
-  done (
-    error?: string,
-  ): void {
+  done(error?: string): void {
     if (error !== null && error !== undefined) {
       this.doneFunction(new Error(`Tick (${this.tick}) error: ${error}`));
       return;

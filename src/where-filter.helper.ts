@@ -1,8 +1,8 @@
 import type { Interfaces } from './shared';
-import { Enums, Helper } from './shared';
+import * as _ from './lodash';
+import { Enums } from './shared';
 
 export class WhereFilterHelper {
-
   /**
    * Returns `true` if resource corresponds to `where` condition.
    *
@@ -11,26 +11,25 @@ export class WhereFilterHelper {
    * @param  {Interfaces.WhereOptions<ResourceType>} where
    * @return {boolean}
    */
-  filterByCondition <ResourceType extends Interfaces.BaseResource> (
+  filterByCondition<ResourceType extends Interfaces.BaseResource>(
     schema: Interfaces.Schema<ResourceType>,
     resource: ResourceType,
     where: Interfaces.WhereConditions<ResourceType>,
   ): boolean {
-    if (Helper.isNil(where) === true) {
-      throw new Error(`WhereFilterHelper.filterByCondition: `
-        + `"Where" condition is required.`);
+    if (_.isNil(where)) {
+      throw new Error(`WhereFilterHelper.filterByCondition: ` + `"Where" condition is required.`);
     }
 
-    const propKeys = Helper.keys(where);
-    if (Helper.isEmpty(propKeys) === true) {
-      throw new Error(`WhereFilterHelper.filterByCondition: `
-        + `"Where" condition must have at least 1 field.`);
+    const propKeys = Object.keys(where);
+    if (_.isEmpty(propKeys)) {
+      throw new Error(`WhereFilterHelper.filterByCondition: ` + `"Where" condition must have at least 1 field.`);
     }
 
-    const resourceIsEqual = Helper.every(propKeys, (propKey: keyof ResourceType) => {
-      const propertyType = typeof schema[propKey] === 'object'
-        ? (schema[propKey] as Interfaces.BaseComplexSchemaField).type
-        : schema[propKey];
+    const resourceIsEqual = _.every(propKeys, (propKey: keyof ResourceType) => {
+      const propertyType =
+        typeof schema[propKey] === 'object'
+          ? (schema[propKey] as Interfaces.BaseComplexSchemaField).type
+          : schema[propKey];
       const condition = where[propKey];
       const resourceValue = resource[propKey];
 
@@ -44,8 +43,10 @@ export class WhereFilterHelper {
         case Enums.SchemaType.String:
           return this.filterByString(resourceValue, condition);
         default:
-          throw new Error(`WhereFilterHelper.filterByCondition: `
-            + `"Where" condition can only filter "Number", "Boolean", "String" and "Date" fields.`);
+          throw new Error(
+            `WhereFilterHelper.filterByCondition: ` +
+              `"Where" condition can only filter "Number", "Boolean", "String" and "Date" fields.`,
+          );
       }
     });
 
@@ -59,57 +60,56 @@ export class WhereFilterHelper {
    * @param  {Date|null|undefined|Interfaces.DateWhereConditions} condition
    * @return {boolean}
    */
-  private filterByDate (
+  private filterByDate(
     value: Date | null | undefined,
     condition: Date | null | undefined | Interfaces.DateWhereConditions,
   ): boolean {
-    const valueAsNumber: number | null | undefined = value instanceof Date
-      ? value.getTime() : value;
+    const valueAsNumber: number | null | undefined = value instanceof Date ? value.getTime() : value;
 
-    if (Helper.isNil(condition) === true) {
-      return valueAsNumber === (condition as (null | undefined));
+    if (_.isNil(condition)) {
+      return valueAsNumber === condition;
     }
 
     if (condition instanceof Date) {
       return valueAsNumber === condition.getTime();
     }
 
-    if (Helper.has(condition, 'in') === true) {
-      if (Helper.isArray(condition['in']) === false || Helper.isEmpty(condition['in']) === true) {
+    if (_.has(condition, 'in')) {
+      if (Array.isArray(condition['in']) === false || _.isEmpty(condition['in'])) {
         return false;
       }
-      const valueIndex = Helper.findIndex(condition['in'], (conditionValue) => {
-        if (Helper.isNil(conditionValue) === true) {
-          return valueAsNumber === (conditionValue as (null | undefined));
+      const valueIndex = _.findIndex(condition['in'], (conditionValue) => {
+        if (_.isNil(conditionValue)) {
+          return valueAsNumber === conditionValue;
         }
         return valueAsNumber === conditionValue.getTime();
       });
       return valueIndex !== -1;
     }
 
-    if (Helper.has(condition, '!in') === true) {
-      if (Helper.isArray(condition['!in']) === false || Helper.isEmpty(condition['!in']) === true) {
+    if (_.has(condition, '!in')) {
+      if (Array.isArray(condition['!in']) === false || _.isEmpty(condition['!in'])) {
         return false;
       }
-      const valueIndex = Helper.findIndex(condition['!in'], (conditionValue) => {
-        if (Helper.isNil(conditionValue) === true) {
-          return valueAsNumber === (conditionValue as (null | undefined));
+      const valueIndex = _.findIndex(condition['!in'], (conditionValue) => {
+        if (_.isNil(conditionValue)) {
+          return valueAsNumber === conditionValue;
         }
         return valueAsNumber === conditionValue.getTime();
       });
       return valueIndex === -1;
     }
 
-    if (Helper.has(condition, '===') === true) {
-      if (Helper.isNil(condition['===']) === true) {
-        return valueAsNumber === (condition['==='] as (null | undefined));
+    if (_.has(condition, '===')) {
+      if (_.isNil(condition['==='])) {
+        return valueAsNumber === condition['==='];
       }
       return valueAsNumber === condition['==='].getTime();
     }
 
-    if (Helper.has(condition, '!==') === true) {
-      if (Helper.isNil(condition['!==']) === true) {
-        return valueAsNumber !== (condition['!=='] as (null | undefined));
+    if (_.has(condition, '!==')) {
+      if (_.isNil(condition['!=='])) {
+        return valueAsNumber !== condition['!=='];
       }
       return valueAsNumber !== condition['!=='].getTime();
     }
@@ -124,28 +124,28 @@ export class WhereFilterHelper {
    * @param  {boolean|null|undefined|Interfaces.BooleanWhereConditions} condition
    * @return {boolean}
    */
-  private filterByBoolean (
+  private filterByBoolean(
     value: boolean | null | undefined,
     condition: boolean | null | undefined | Interfaces.BooleanWhereConditions,
   ): boolean {
-    if (Helper.isNil(condition) === true) {
-      return value === (condition as (null | undefined));
+    if (_.isNil(condition)) {
+      return value === condition;
     }
 
     if (typeof condition === 'boolean') {
       return value === condition;
     }
 
-    if (Helper.has(condition, '===') === true) {
-      if (Helper.isNil(condition['===']) === true) {
-        return value === (condition['==='] as (null | undefined));
+    if (_.has(condition, '===')) {
+      if (_.isNil(condition['==='])) {
+        return value === condition['==='];
       }
       return value === condition['==='];
     }
 
-    if (Helper.has(condition, '!==') === true) {
-      if (Helper.isNil(condition['!==']) === true) {
-        return value !== (condition['!=='] as (null | undefined));
+    if (_.has(condition, '!==')) {
+      if (_.isNil(condition['!=='])) {
+        return value !== condition['!=='];
       }
       return value !== condition['!=='];
     }
@@ -158,73 +158,69 @@ export class WhereFilterHelper {
    * @param  {string|null|undefined|Interfaces.StringWhereConditions} condition
    * @return {boolean}
    */
-  private filterByString (
+  private filterByString(
     value: string | null | undefined,
     condition: string | null | undefined | Interfaces.StringWhereConditions,
   ): boolean {
-    if (Helper.isNil(condition) === true) {
-      return value === (condition as null);
+    if (_.isNil(condition)) {
+      return value === condition;
     }
 
     if (typeof condition === 'string') {
       return value === condition;
     }
 
-    if (Helper.has(condition, 'in') === true) {
-      if (Helper.isArray(condition['in']) === false || Helper.isEmpty(condition['in']) === true) {
+    if (_.has(condition, 'in')) {
+      if (Array.isArray(condition['in']) === false || _.isEmpty(condition['in'])) {
         return false;
       }
-      return Helper.includes(condition['in'], value) === true;
+      return _.includes(condition['in'], value);
     }
 
-    if (Helper.has(condition, '!in') === true) {
-      if (Helper.isArray(condition['!in']) === false || Helper.isEmpty(condition['!in']) === true) {
+    if (_.has(condition, '!in')) {
+      if (Array.isArray(condition['!in']) === false || _.isEmpty(condition['!in'])) {
         return false;
       }
-      return Helper.includes(condition['!in'], value) === false;
+      return _.includes(condition['!in'], value) === false;
     }
 
-    if (Helper.has(condition, '===') === true) {
-      if (Helper.isNil(condition['===']) === true) {
-        return value === (condition['==='] as (null | undefined));
+    if (_.has(condition, '===')) {
+      if (_.isNil(condition['==='])) {
+        return value === condition['==='];
       }
       return value === condition['==='];
     }
 
-    if (Helper.has(condition, '!==') === true) {
-      if (Helper.isNil(condition['!==']) === true) {
-        return value !== (condition['!=='] as (null | undefined));
+    if (_.has(condition, '!==')) {
+      if (_.isNil(condition['!=='])) {
+        return value !== condition['!=='];
       }
       return value !== condition['!=='];
     }
 
-    if (Helper.has(condition, 'like') === true) {
-      if (Helper.isNil(condition['like']) === true || Helper.isNil(value) === true) {
+    if (_.has(condition, 'like')) {
+      if (_.isNil(condition['like']) || _.isNil(value)) {
         return false;
       }
 
-      if (typeof condition['like'] !== 'string' && (condition['like'] instanceof RegExp) === false) {
+      if (typeof condition['like'] !== 'string' && condition['like'] instanceof RegExp === false) {
         return false;
       }
 
-      const rgx = typeof condition['like'] === 'string'
-        ? new RegExp(condition['like'])
-        : condition['like'];
-      return rgx.test(value) === true;
+      const rgx = typeof condition['like'] === 'string' ? new RegExp(condition['like']) : condition['like'];
+      return rgx.test(value);
     }
 
-    if (Helper.has(condition, '!like') === true) {
-      if (Helper.isNil(condition['!like']) === true || Helper.isNil(value) === true) {
+    if (_.has(condition, '!like')) {
+      if (_.isNil(condition['!like']) || _.isNil(value)) {
         return false;
       }
 
-      if (typeof condition['!like'] !== 'string' && (condition['!like'] instanceof RegExp) === false) {
+      if (typeof condition['!like'] !== 'string' && condition['!like'] instanceof RegExp === false) {
         return false;
       }
 
-      const rgx = typeof condition['!like'] === 'string'
-        ? new RegExp(condition['!like'])
-        : condition['!like'];
+      const rgx = typeof condition['!like'] === 'string' ? new RegExp(condition['!like']) : condition['!like'];
       return rgx.test(value) === false;
     }
   }
@@ -236,42 +232,42 @@ export class WhereFilterHelper {
    * @param  {number|null|undefined|Interfaces.NumberWhereConditions} condition
    * @return {boolean}
    */
-  private filterByNumber (
+  private filterByNumber(
     value: number | null | undefined,
     condition: number | null | undefined | Interfaces.NumberWhereConditions,
   ): boolean {
-    if (Helper.isNil(condition) === true) {
-      return value === (condition as null);
+    if (_.isNil(condition)) {
+      return value === condition;
     }
 
     if (typeof condition === 'number') {
       return value === condition;
     }
 
-    if (Helper.has(condition, 'in') === true) {
-      if (Helper.isArray(condition['in']) === false || Helper.isEmpty(condition['in']) === true) {
+    if (_.has(condition, 'in')) {
+      if (Array.isArray(condition['in']) === false || _.isEmpty(condition['in'])) {
         return false;
       }
-      return Helper.includes(condition['in'], value) === true;
+      return _.includes(condition['in'], value);
     }
 
-    if (Helper.has(condition, '!in') === true) {
-      if (Helper.isArray(condition['!in']) === false || Helper.isEmpty(condition['!in']) === true) {
+    if (_.has(condition, '!in')) {
+      if (Array.isArray(condition['!in']) === false || _.isEmpty(condition['!in'])) {
         return false;
       }
-      return Helper.includes(condition['!in'], value) === false;
+      return _.includes(condition['!in'], value) === false;
     }
 
-    if (Helper.has(condition, '===') === true) {
-      if (Helper.isNil(condition['===']) === true) {
-        return value === (condition['==='] as (null | undefined));
+    if (_.has(condition, '===')) {
+      if (_.isNil(condition['==='])) {
+        return value === condition['==='];
       }
       return value === condition['==='];
     }
 
-    if (Helper.has(condition, '!==') === true) {
-      if (Helper.isNil(condition['!==']) === true) {
-        return value !== (condition['!=='] as (null | undefined));
+    if (_.has(condition, '!==')) {
+      if (_.isNil(condition['!=='])) {
+        return value !== condition['!=='];
       }
       return value !== condition['!=='];
     }
@@ -286,136 +282,136 @@ export class WhereFilterHelper {
    * @param  {Interfaces.NumberWhereConditions|Interfaces.DateWhereConditions} condition
    * @return {boolean}
    */
-  private filterByRange (
+  private filterByRange(
     value: number | Date,
     condition: Interfaces.NumberWhereConditions | Interfaces.DateWhereConditions,
   ): boolean {
-    if (Helper.has(condition, '>=') === true) {
-      if (Helper.isNil(condition['>=']) === true) {
+    if (_.has(condition, '>=')) {
+      if (_.isNil(condition['>='])) {
         throw new Error(`WhereFilterHelper.filterByRange: ">=" condition can't contain "nil" value.`);
       }
       return value >= condition['>='];
     }
 
-    if (Helper.has(condition, '>') === true) {
-      if (Helper.isNil(condition['>']) === true) {
+    if (_.has(condition, '>')) {
+      if (_.isNil(condition['>'])) {
         throw new Error(`WhereFilterHelper.filterByRange: ">" condition can't contain "nil" value.`);
       }
       return value > condition['>'];
     }
 
-    if (Helper.has(condition, '<=') === true) {
-      if (Helper.isNil(condition['<=']) === true) {
+    if (_.has(condition, '<=')) {
+      if (_.isNil(condition['<='])) {
         throw new Error(`WhereFilterHelper.filterByRange: "<=" condition can't contain "nil" value.`);
       }
       return value <= condition['<='];
     }
 
-    if (Helper.has(condition, '<') === true) {
-      if (Helper.isNil(condition['<']) === true) {
+    if (_.has(condition, '<')) {
+      if (_.isNil(condition['<'])) {
         throw new Error(`WhereFilterHelper.filterByRange: "<" condition can't contain "nil" value.`);
       }
       return value < condition['<'];
     }
 
-    if (Helper.has(condition, '[]') === true) {
+    if (_.has(condition, '[]')) {
       const conditionValue = condition['[]'];
-      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
+      if (Array.isArray(conditionValue) === false || _.isEmpty(conditionValue)) {
         return false;
       }
 
-      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+      if (_.isNil(conditionValue[0]) || _.isNil(conditionValue[1])) {
         throw new Error(`WhereFilterHelper.filterByRange: "[]" condition can't contain "nil" value.`);
       }
 
       return value >= conditionValue[0] && value <= conditionValue[1];
     }
 
-    if (Helper.has(condition, '![]') === true) {
+    if (_.has(condition, '![]')) {
       const conditionValue = condition['![]'];
-      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
+      if (Array.isArray(conditionValue) === false || _.isEmpty(conditionValue)) {
         return false;
       }
 
-      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+      if (_.isNil(conditionValue[0]) || _.isNil(conditionValue[1])) {
         throw new Error(`WhereFilterHelper.filterByRange: "![]" condition can't contain "nil" value.`);
       }
 
       return !(value >= conditionValue[0] && value <= conditionValue[1]);
     }
 
-    if (Helper.has(condition, '[)') === true) {
+    if (_.has(condition, '[)')) {
       const conditionValue = condition['[)'];
-      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
+      if (Array.isArray(conditionValue) === false || _.isEmpty(conditionValue)) {
         return false;
       }
 
-      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+      if (_.isNil(conditionValue[0]) || _.isNil(conditionValue[1])) {
         throw new Error(`WhereFilterHelper.filterByRange: "[)" condition can't contain "nil" value.`);
       }
 
       return value >= conditionValue[0] && value < conditionValue[1];
     }
 
-    if (Helper.has(condition, '![)') === true) {
+    if (_.has(condition, '![)')) {
       const conditionValue = condition['![)'];
-      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
+      if (Array.isArray(conditionValue) === false || _.isEmpty(conditionValue)) {
         return false;
       }
 
-      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+      if (_.isNil(conditionValue[0]) || _.isNil(conditionValue[1])) {
         throw new Error(`WhereFilterHelper.filterByRange: "![)" condition can't contain "nil" value.`);
       }
 
       return !(value >= conditionValue[0] && value < conditionValue[1]);
     }
 
-    if (Helper.has(condition, '(]') === true) {
+    if (_.has(condition, '(]')) {
       const conditionValue = condition['(]'];
-      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
+      if (Array.isArray(conditionValue) === false || _.isEmpty(conditionValue)) {
         return false;
       }
 
-      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+      if (_.isNil(conditionValue[0]) || _.isNil(conditionValue[1])) {
         throw new Error(`WhereFilterHelper.filterByRange: "(]" condition can't contain "nil" value.`);
       }
 
       return value > conditionValue[0] && value <= conditionValue[1];
     }
 
-    if (Helper.has(condition, '!(]') === true) {
+    if (_.has(condition, '!(]')) {
       const conditionValue = condition['!(]'];
-      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
+      if (Array.isArray(conditionValue) === false || _.isEmpty(conditionValue)) {
         return false;
       }
 
-      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+      if (_.isNil(conditionValue[0]) || _.isNil(conditionValue[1])) {
         throw new Error(`WhereFilterHelper.filterByRange: "!(]" condition can't contain "nil" value.`);
       }
 
       return !(value > conditionValue[0] && value <= conditionValue[1]);
     }
 
-    if (Helper.has(condition, '()') === true) {
+    if (_.has(condition, '()')) {
       const conditionValue = condition['()'];
-      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
+      if (Array.isArray(conditionValue) === false || _.isEmpty(conditionValue)) {
         return false;
       }
 
-      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+      if (_.isNil(conditionValue[0]) || _.isNil(conditionValue[1])) {
         throw new Error(`WhereFilterHelper.filterByRange: "()" condition can't contain "nil" value.`);
       }
 
       return value > conditionValue[0] && value < conditionValue[1];
     }
 
-    if (Helper.has(condition, '!()') === true) {
+    if (_.has(condition, '!()')) {
       const conditionValue = condition['!()'];
-      if (Helper.isArray(conditionValue) === false || Helper.isEmpty(conditionValue) === true) {
+      if (Array.isArray(conditionValue) === false || _.isEmpty(conditionValue)) {
         return false;
       }
 
-      if (Helper.isNil(conditionValue[0]) === true || Helper.isNil(conditionValue[1]) === true) {
+      if (_.isNil(conditionValue[0]) || _.isNil(conditionValue[1])) {
         throw new Error(`WhereFilterHelper.filterByRange: "!()" condition can't contain "nil" value.`);
       }
 

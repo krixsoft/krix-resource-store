@@ -1,10 +1,8 @@
 import * as Enums from './enums';
 
-export type ComputedFunction <ResourceType = any, ComputedType = any>
-  = (resource: ResourceType) => ComputedType;
+export type ComputedFunction<ResourceType = any, ComputedType = any> = (resource: ResourceType) => ComputedType;
 
-
-export interface ComputedField <ResourceType = any, ComputedType = any> {
+export interface ComputedField<ResourceType = any, ComputedType = any> {
   name: string;
   enumerable?: boolean;
   fn: ComputedFunction<ResourceType, ComputedType>;
@@ -49,12 +47,11 @@ export interface HasIncludeField {
 export type IncludeField = BelongsToIncludeField | HasIncludeField;
 
 export interface BaseResource {
-  id?: string|number;
+  id?: string | number;
   [key: string]: any;
 }
 
-export interface FindOptions {
-}
+export interface FindOptions {}
 
 /**
  * Where condition config for properties with a `number` type.
@@ -63,7 +60,7 @@ export interface NumberWhereConditions {
   /**
    * Resource's field stores any value from the passed array of numbers.
    */
-  'in': number[];
+  in: number[];
   /**
    * Resource's field doesn't store values from the passed array of numbers.
    */
@@ -97,35 +94,35 @@ export interface NumberWhereConditions {
   /**
    * Resource's field is in the range from start up to end, but not including both ranges.
    */
-  '()': [ number, number ];
+  '()': [number, number];
   /**
    * Resource's field is in the range from start up to, but not including, end.
    */
-  '[)': [ number, number ];
+  '[)': [number, number];
   /**
    * Resource's field is in the range from start but not including it, and up to end including it.
    */
-  '(]': [ number, number ];
+  '(]': [number, number];
   /**
    * Resource's field is in the range from start up to end, including both ranges.
    */
-  '[]': [ number, number ];
+  '[]': [number, number];
   /**
    * Resource's field isn't in the range from start up to end, but not including both ranges.
    */
-  '!()': [ number, number ];
+  '!()': [number, number];
   /**
    * Resource's field isn't in the range from start up to, but not including, end.
    */
-  '![)': [ number, number ];
+  '![)': [number, number];
   /**
    * Resource's field isn't in the range from start but not including it, and up to end including it.
    */
-  '!(]': [ number, number ];
+  '!(]': [number, number];
   /**
    * Resource's field isn't in the range from start up to end, including both ranges.
    */
-  '![]': [ number, number ];
+  '![]': [number, number];
 }
 
 /**
@@ -149,7 +146,7 @@ export interface StringWhereConditions {
   /**
    * Resource's field stores any value from the passed array of strings.
    */
-  'in': string[];
+  in: string[];
   /**
    * Resource's field doesn't store values from the passed array of strings.
    */
@@ -167,7 +164,7 @@ export interface StringWhereConditions {
   /**
    * Resource's field looks like to the passed string|RegExp.
    */
-  'like': string | RegExp;
+  like: string | RegExp;
   /**
    * Resource's field doesn't look like to the passed string|RegExp.
    */
@@ -181,7 +178,7 @@ export interface DateWhereConditions {
   /**
    * Resource's field stores any value from the passed array of dates.
    */
-  'in': Date[];
+  in: Date[];
   /**
    * Resource's field doesn't store values from the passed array of dates.
    */
@@ -215,65 +212,69 @@ export interface DateWhereConditions {
   /**
    * Resource's field is in the range from start up to end, but not including both ranges.
    */
-  '()': [ Date, Date ];
+  '()': [Date, Date];
   /**
    * Resource's field is in the range from start up to, but not including, end.
    */
-  '[)': [ Date, Date ];
+  '[)': [Date, Date];
   /**
    * Resource's field is in the range from start but not including it, and up to end including it.
    */
-  '(]': [ Date, Date ];
+  '(]': [Date, Date];
   /**
    * Resource's field is in the range from start up to end, including both ranges.
    */
-  '[]': [ Date, Date ];
+  '[]': [Date, Date];
   /**
    * Resource's field isn't in the range from start up to end, but not including both ranges.
    */
-  '!()': [ Date, Date ];
+  '!()': [Date, Date];
   /**
    * Resource's field isn't in the range from start up to, but not including, end.
    */
-  '![)': [ Date, Date ];
+  '![)': [Date, Date];
   /**
    * Resource's field isn't in the range from start but not including it, and up to end including it.
    */
-  '!(]': [ Date, Date ];
+  '!(]': [Date, Date];
   /**
    * Resource's field isn't in the range from start up to end, including both ranges.
    */
-  '![]': [ Date, Date ];
+  '![]': [Date, Date];
 }
 
 /**
  * Common `where` condition config for all property types.
  */
-export type WhereCondition <ValueType> = ValueType extends string
+export type WhereCondition<ValueType> = ValueType extends string
   ? Partial<StringWhereConditions> | ValueType
   : ValueType extends Date
-  ? Partial<DateWhereConditions> | ValueType
-  : ValueType extends number
-  ? Partial<NumberWhereConditions> | ValueType
-  : ValueType extends boolean
-  ? Partial<BooleanWhereConditions> | ValueType
-  : ValueType extends null
-  ? null
-  : undefined;
+    ? Partial<DateWhereConditions> | ValueType
+    : ValueType extends number
+      ? Partial<NumberWhereConditions> | ValueType
+      : ValueType extends boolean
+        ? Partial<BooleanWhereConditions> | ValueType
+        : ValueType extends null
+          ? null
+          : undefined;
 
 /**
  * Object with `where` conditions for resource properties. If object is empty or equal to null or undefined,
  * condition is always true.
  */
-export type WhereConditions <T> = {
+export type WhereConditions<T> = {
   [P in keyof T]?: WhereCondition<T[P]>;
 };
 
 /**
  * Schema field which contains only a native type.
  */
-export type SimpleSchemaField = Enums.SchemaType.Number | Enums.SchemaType.String
-  | Enums.SchemaType.Boolean | Enums.SchemaType.Date | Enums.SchemaType.Object;
+export type SimpleSchemaField =
+  | Enums.SchemaType.Number
+  | Enums.SchemaType.String
+  | Enums.SchemaType.Boolean
+  | Enums.SchemaType.Date
+  | Enums.SchemaType.Object;
 
 /**
  * Base interface for all complex fields - field which is described by an object.
@@ -292,7 +293,7 @@ export interface NativeComplexSchemaField extends BaseComplexSchemaField {
  * Every computed field will be set as `getter` in every resource `object`. If computed field is called,
  * getter will call the `compute` method from settings.
  */
-export interface ComputedSchemaField <ResourceType> extends BaseComplexSchemaField {
+export interface ComputedSchemaField<ResourceType> extends BaseComplexSchemaField {
   type: Enums.SchemaType.Computed;
   compute: (resource: ResourceType) => any;
 }
@@ -348,17 +349,21 @@ export interface RelationHasSchemaField extends BaseComplexSchemaField {
  * FYI[WARN]: This logic is very expensive because uses `Nested Loops Join` algorithm.
  * http://dcx.sap.com/1101/en/dbusage_en11/join-methods-optimizer-queryopt.html
  */
-export interface RelationBelongsToSchemaField <ResourceType> extends BaseComplexSchemaField {
+export interface RelationBelongsToSchemaField<ResourceType> extends BaseComplexSchemaField {
   type: Enums.SchemaType.Relation;
   relation: Enums.RelationType.BelongsToMany | Enums.RelationType.BelongsToOne;
   resource: string;
   sourceProperty: keyof ResourceType;
 }
 
-export type SchemaField <ResourceType> = SimpleSchemaField | NativeComplexSchemaField
-  | ComputedSchemaField<ResourceType> | RelationHasSchemaField | RelationBelongsToSchemaField<ResourceType>;
+export type SchemaField<ResourceType> =
+  | SimpleSchemaField
+  | NativeComplexSchemaField
+  | ComputedSchemaField<ResourceType>
+  | RelationHasSchemaField
+  | RelationBelongsToSchemaField<ResourceType>;
 
-export type Schema <ResourceType> = {
+export type Schema<ResourceType> = {
   /**
    * The description of a resource column for model
    */
