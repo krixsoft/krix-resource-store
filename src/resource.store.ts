@@ -24,9 +24,7 @@ export abstract class ResourceStore<ResourceType extends BaseResource> {
   /**
    * Store name.
    */
-  public uniqKeys(): (keyof ResourceType)[] {
-    return [`id`];
-  }
+  public readonly uniqKeys: (keyof ResourceType)[] = [`id`];
   /**
    * Store name.
    */
@@ -116,7 +114,7 @@ export abstract class ResourceStore<ResourceType extends BaseResource> {
    * Returns `true` if resource has uniq keys.
    */
   private hasUniqKeys(resource: ResourceType): boolean {
-    return _.every(this.uniqKeys(), (uniqKey) => {
+    return _.every(this.uniqKeys, (uniqKey) => {
       return _.has(resource, uniqKey);
     });
   }
@@ -133,7 +131,7 @@ export abstract class ResourceStore<ResourceType extends BaseResource> {
    * Returns `true` if resource has valid uniq keys.
    */
   private hasValidUniqKeys(resource: ResourceType): boolean {
-    return _.every(this.uniqKeys(), (uniqKey) => {
+    return _.every(this.uniqKeys, (uniqKey) => {
       return this.isValidUniqKeyType(resource[uniqKey]);
     });
   }
@@ -143,7 +141,7 @@ export abstract class ResourceStore<ResourceType extends BaseResource> {
    */
   private buildSearchObject(resource: ResourceType) {
     const searchObj = {} as ResourceType;
-    for (const uniqKey of this.uniqKeys()) {
+    for (const uniqKey of this.uniqKeys) {
       searchObj[uniqKey] = resource[uniqKey];
     }
 
@@ -155,7 +153,7 @@ export abstract class ResourceStore<ResourceType extends BaseResource> {
    */
   private buildSearchKey(resource: Partial<ResourceType>): string {
     let searchKey = ``;
-    for (const uniqKey of this.uniqKeys()) {
+    for (const uniqKey of this.uniqKeys) {
       searchKey += `${resource[uniqKey]};`;
     }
 
@@ -167,11 +165,11 @@ export abstract class ResourceStore<ResourceType extends BaseResource> {
    */
   private injectOne(resource: ResourceType): ResourceType {
     if (!this.hasUniqKeys(resource)) {
-      throw new Error(`ResourceStore.injectOne: Resource must have uniq key (${this.uniqKeys().join(', ')}).`);
+      throw new Error(`ResourceStore.injectOne: Resource must have uniq key (${this.uniqKeys.join(', ')}).`);
     }
 
     if (!this.hasValidUniqKeys(resource)) {
-      throw new Error(`ResourceStore.injectOne: Uniq key (${this.uniqKeys().join(', ')}) must be a string or number.`);
+      throw new Error(`ResourceStore.injectOne: Uniq key (${this.uniqKeys.join(', ')}) must be a string or number.`);
     }
 
     const oldResourceIndex = _.findIndex(this.store, this.buildSearchObject(resource));

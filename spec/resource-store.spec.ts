@@ -193,6 +193,87 @@ describe(`ResourceStore`, () => {
     });
   });
 
+  describe(`inject with complex uniq key`, () => {
+    interface User {
+      id: number;
+      subId: number;
+      firstName: string;
+      lastName: string;
+    }
+    class UserResourceStore extends ResourceStore<User> {
+      public name() {
+        return 'user';
+      }
+      uniqKeys: (keyof User)[] = ['id', 'subId'];
+
+      public schema: Interfaces.Schema<User> = {
+        id: Enums.SchemaType.Number,
+        subId: Enums.SchemaType.Number,
+        firstName: {
+          type: Enums.SchemaType.String,
+          required: true,
+        },
+        lastName: {
+          type: Enums.SchemaType.String,
+        },
+      };
+    }
+    let userResourceStore: UserResourceStore;
+
+    beforeEach(() => {
+      userResourceStore = new UserResourceStore();
+    });
+
+    it(`should inject an object and result resource should be another object`, () => {
+      const user = {
+        id: 1,
+        subId: 2,
+        firstName: 'Ivan',
+        lastName: 'Petrov',
+      };
+      const injectedUser = userResourceStore.inject(user);
+
+      expect(injectedUser).not.to.be.equal(user);
+      expect(injectedUser.firstName).to.be.equal(user.firstName);
+      expect(injectedUser.lastName).to.be.equal(user.lastName);
+    });
+
+    it(`should throw an error if resource id isn't defined`, () => {
+      let testError: any;
+      try {
+        userResourceStore.inject({
+          id: 1,
+          firstName: 'Ivan',
+          lastName: 'Petrov',
+        } as User);
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).not.to.be.undefined;
+      expect(testError.message).to.be.equal(`ResourceStore.injectOne: Resource must have uniq key (id, subId).`);
+    });
+
+    it(`should throw an error if resource id isn't a string or number`, () => {
+      let testError: any;
+      try {
+        userResourceStore.inject({
+          id: 1,
+          subId: null,
+          firstName: 'Ivan',
+          lastName: 'Petrov',
+        });
+      } catch (error) {
+        testError = error;
+      }
+
+      expect(testError).not.to.be.undefined;
+      expect(testError.message).to.be.equal(
+        `ResourceStore.injectOne: Uniq key (id, subId) must be a string or number.`,
+      );
+    });
+  });
+
   describe(`Schema - "Base" simple fields`, () => {
     it(`should allow to inject resource with simple "Number" field`, () => {
       interface User {
