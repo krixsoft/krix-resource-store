@@ -17,7 +17,7 @@
     "start": "gulp --gulpfile=./infra/watch.gulp.js dev:watch",
     "test": "gulp --gulpfile=./infra/test.gulp.js test:watch",
     "build:webpack": "webpack --config webpack.prod.js --progress --color",
-    "build:pkg": "npm run gulp:clear:dist && npm run build:webpack && gulp --gulpfile=./infra/pkg.gulp.js pkg:prepublish"
+    "build:pkg": "npm run gulp:clear:dist && npm run build && gulp --gulpfile=./infra/pkg.gulp.js pkg:prepublish"
   },
   "keywords": [
     "krix",
