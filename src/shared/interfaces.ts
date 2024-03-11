@@ -1,5 +1,10 @@
 import * as Enums from './enums';
 
+export interface StoreOptions {
+  skipRelationCheck?: boolean;
+  name?: string;
+}
+
 export type ComputedFunction<ResourceType = any, ComputedType = any> = (resource: ResourceType) => ComputedType;
 
 export interface ComputedField<ResourceType = any, ComputedType = any> {

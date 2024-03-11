@@ -17,10 +17,6 @@ describe(`ResourceStore`, () => {
     }
 
     class UserResourceStore extends ResourceStore<User> {
-      public name() {
-        return 'user';
-      }
-
       public schema: Interfaces.Schema<User> = {
         firstName: {
           type: Enums.SchemaType.String,
@@ -33,8 +29,33 @@ describe(`ResourceStore`, () => {
       };
     }
 
-    const userResourceStore = new UserResourceStore();
+    const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
     expect(userResourceStore).to.be.an.instanceOf(UserResourceStore);
+  });
+
+  it(`should throw an error if user creates multiple instances of Resource store`, () => {
+    interface User {
+      firstName: string;
+      lastName: string;
+    }
+
+    class UserResourceStore extends ResourceStore<User> {
+      public schema: Interfaces.Schema<User> = {
+        firstName: Enums.SchemaType.String,
+        lastName: Enums.SchemaType.String,
+      };
+    }
+
+    let testError: any;
+    try {
+      new UserResourceStore();
+      new UserResourceStore();
+    } catch (error) {
+      testError = error;
+    }
+
+    expect(testError).not.to.be.undefined;
+    expect(testError.message).to.be.equal(`Resource (UserResourceStore) is already registered`);
   });
 
   describe(`inject`, () => {
@@ -44,10 +65,6 @@ describe(`ResourceStore`, () => {
       lastName: string;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name() {
-        return 'user';
-      }
-
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
         firstName: {
@@ -62,7 +79,7 @@ describe(`ResourceStore`, () => {
     let userResourceStore: UserResourceStore;
 
     beforeEach(() => {
-      userResourceStore = new UserResourceStore();
+      userResourceStore = new UserResourceStore({ skipRelationCheck: true });
     });
 
     it(`should inject an object and result resource should be another object`, () => {
@@ -154,7 +171,7 @@ describe(`ResourceStore`, () => {
       }
 
       expect(testError).not.to.be.undefined;
-      expect(testError.message).to.be.equal(`ResourceStore.injectOne: Resource must have uniq key (id).`);
+      expect(testError.message).to.be.equal(`Resource (UserResourceStore) must have uniq key (id)`);
     });
 
     it(`should throw an error if resource id isn't a string or number`, () => {
@@ -170,7 +187,7 @@ describe(`ResourceStore`, () => {
       }
 
       expect(testError).not.to.be.undefined;
-      expect(testError.message).to.be.equal(`ResourceStore.injectOne: Uniq key (id) must be a string or number.`);
+      expect(testError.message).to.be.equal(`Uniq key (id) must be a string or number in resource (UserResourceStore)`);
     });
 
     it('should allow to inject an array of resources', () => {
@@ -201,9 +218,6 @@ describe(`ResourceStore`, () => {
       lastName: string;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name() {
-        return 'user';
-      }
       uniqKeys: (keyof User)[] = ['id', 'subId'];
 
       public schema: Interfaces.Schema<User> = {
@@ -221,7 +235,7 @@ describe(`ResourceStore`, () => {
     let userResourceStore: UserResourceStore;
 
     beforeEach(() => {
-      userResourceStore = new UserResourceStore();
+      userResourceStore = new UserResourceStore({ skipRelationCheck: true });
     });
 
     it(`should inject an object and result resource should be another object`, () => {
@@ -251,7 +265,7 @@ describe(`ResourceStore`, () => {
       }
 
       expect(testError).not.to.be.undefined;
-      expect(testError.message).to.be.equal(`ResourceStore.injectOne: Resource must have uniq key (id, subId).`);
+      expect(testError.message).to.be.equal(`Resource (UserResourceStore) must have uniq key (id, subId)`);
     });
 
     it(`should throw an error if resource id isn't a string or number`, () => {
@@ -269,7 +283,7 @@ describe(`ResourceStore`, () => {
 
       expect(testError).not.to.be.undefined;
       expect(testError.message).to.be.equal(
-        `ResourceStore.injectOne: Uniq key (id, subId) must be a string or number.`,
+        `Uniq key (id, subId) must be a string or number in resource (UserResourceStore)`,
       );
     });
   });
@@ -280,15 +294,11 @@ describe(`ResourceStore`, () => {
         age: number;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           age: Enums.SchemaType.Number,
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
         age: 26,
@@ -302,15 +312,11 @@ describe(`ResourceStore`, () => {
         name: string;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           name: Enums.SchemaType.String,
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
         name: `Andrey`,
@@ -325,15 +331,11 @@ describe(`ResourceStore`, () => {
         hasHome: boolean;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           hasHome: Enums.SchemaType.Boolean,
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
         hasHome: true,
@@ -348,15 +350,11 @@ describe(`ResourceStore`, () => {
         birthday: Date;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           birthday: Enums.SchemaType.Date,
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
         birthday: `2021-08-18T22:25:12.581Z`,
@@ -372,15 +370,11 @@ describe(`ResourceStore`, () => {
         birthday: Date;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           birthday: Enums.SchemaType.Date,
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const isoString = `2021-08-18T22:25:12.581Z`;
       const user = {
         id: 1,
@@ -397,15 +391,11 @@ describe(`ResourceStore`, () => {
         metainfo: object;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           metainfo: Enums.SchemaType.Object,
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
         metainfo: { role: 5 },
@@ -422,17 +412,13 @@ describe(`ResourceStore`, () => {
         age: number;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           age: {
             type: Enums.SchemaType.Number,
           },
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
         age: 26,
@@ -446,17 +432,13 @@ describe(`ResourceStore`, () => {
         name: string;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           name: {
             type: Enums.SchemaType.String,
           },
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
         name: `Andrey`,
@@ -471,17 +453,13 @@ describe(`ResourceStore`, () => {
         hasHome: boolean;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           hasHome: {
             type: Enums.SchemaType.Boolean,
           },
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
         hasHome: true,
@@ -496,17 +474,13 @@ describe(`ResourceStore`, () => {
         birthday: Date;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           birthday: {
             type: Enums.SchemaType.Date,
           },
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
         birthday: `2021-08-18T22:25:12.581Z`,
@@ -522,17 +496,13 @@ describe(`ResourceStore`, () => {
         birthday: Date;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           birthday: {
             type: Enums.SchemaType.Date,
           },
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const isoString = `2021-08-18T22:25:12.581Z`;
       const user = {
         id: 1,
@@ -549,17 +519,13 @@ describe(`ResourceStore`, () => {
         metainfo: object;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           metainfo: {
             type: Enums.SchemaType.Object,
           },
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
         metainfo: { role: 5 },
@@ -578,10 +544,6 @@ describe(`ResourceStore`, () => {
         fullName?: string;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           firstName: Enums.SchemaType.String,
           lastName: Enums.SchemaType.String,
@@ -593,7 +555,7 @@ describe(`ResourceStore`, () => {
           },
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
         firstName: 'Ivan',
@@ -610,10 +572,6 @@ describe(`ResourceStore`, () => {
         randomValue?: number;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           id: Enums.SchemaType.Number,
           randomValue: {
@@ -624,7 +582,7 @@ describe(`ResourceStore`, () => {
           },
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
       };
@@ -639,10 +597,6 @@ describe(`ResourceStore`, () => {
         role?: number;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           id: Enums.SchemaType.Number,
           role: {
@@ -653,7 +607,7 @@ describe(`ResourceStore`, () => {
           },
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user = {
         id: 1,
         role: 1,
@@ -673,10 +627,6 @@ describe(`ResourceStore`, () => {
         friend?: User;
       }
       class UserResourceStore extends ResourceStore<User> {
-        public name() {
-          return 'user';
-        }
-
         public schema: Interfaces.Schema<User> = {
           id: Enums.SchemaType.Number,
           friendId: Enums.SchemaType.Number,
@@ -684,11 +634,11 @@ describe(`ResourceStore`, () => {
             type: Enums.SchemaType.Relation,
             relation: Enums.RelationType.BelongsToMany,
             sourceProperty: 'friendId',
-            resource: 'user',
+            resource: 'UserResourceStore',
           },
         };
       }
-      const userResourceStore = new UserResourceStore();
+      const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const user: User = {
         id: 1,
         friendId: 2,
@@ -705,10 +655,6 @@ describe(`ResourceStore`, () => {
         friend?: UserWithFriend;
       }
       class UserWithFriendResourceStore extends ResourceStore<UserWithFriend> {
-        public name() {
-          return 'userWithFriend';
-        }
-
         public schema: Interfaces.Schema<UserWithFriend> = {
           id: Enums.SchemaType.Number,
           friendId: Enums.SchemaType.Number,
@@ -716,7 +662,7 @@ describe(`ResourceStore`, () => {
             type: Enums.SchemaType.Relation,
             relation: Enums.RelationType.BelongsToOne,
             sourceProperty: 'friendId',
-            resource: 'userWithFriend',
+            resource: 'UserWithFriendResourceStore',
           },
         };
       }
@@ -727,10 +673,6 @@ describe(`ResourceStore`, () => {
         name: string;
       }
       class RoleStore extends ResourceStore<Role> {
-        public name() {
-          return 'role';
-        }
-
         public schema: Interfaces.Schema<Role> = {
           id: Enums.SchemaType.Number,
           name: Enums.SchemaType.String,
@@ -744,10 +686,6 @@ describe(`ResourceStore`, () => {
         role?: UserWithRole;
       }
       class UserWithRoleResourceStore extends ResourceStore<UserWithRole> {
-        public name() {
-          return 'userWithRole';
-        }
-
         public schema: Interfaces.Schema<UserWithRole> = {
           id: Enums.SchemaType.Number,
           roleId: Enums.SchemaType.Number,
@@ -755,16 +693,16 @@ describe(`ResourceStore`, () => {
             type: Enums.SchemaType.Relation,
             relation: Enums.RelationType.BelongsToOne,
             sourceProperty: 'roleId',
-            resource: 'role',
+            resource: 'RoleStore',
           },
         };
       }
       let userWithRoleResourceStore: UserWithRoleResourceStore;
 
       beforeEach(() => {
-        userWithFriendResourceStore = new UserWithFriendResourceStore();
-        roleStore = new RoleStore();
-        userWithRoleResourceStore = new UserWithRoleResourceStore();
+        userWithFriendResourceStore = new UserWithFriendResourceStore({ skipRelationCheck: true });
+        roleStore = new RoleStore({ skipRelationCheck: true });
+        userWithRoleResourceStore = new UserWithRoleResourceStore({ skipRelationCheck: true });
       });
 
       it(`should return "null" if source field contains "nil" value`, () => {
@@ -830,10 +768,6 @@ describe(`ResourceStore`, () => {
         friends?: UserWithFriends[];
       }
       class UserWithFriendsResourceStore extends ResourceStore<UserWithFriends> {
-        public name() {
-          return 'userWithFriends';
-        }
-
         public schema: Interfaces.Schema<UserWithFriends> = {
           id: Enums.SchemaType.Number,
           friendsIds: Enums.SchemaType.Object,
@@ -841,7 +775,7 @@ describe(`ResourceStore`, () => {
             type: Enums.SchemaType.Relation,
             relation: Enums.RelationType.BelongsToMany,
             sourceProperty: 'friendsIds',
-            resource: 'userWithFriends',
+            resource: 'UserWithFriendsResourceStore',
           },
         };
       }
@@ -852,10 +786,6 @@ describe(`ResourceStore`, () => {
         name: string;
       }
       class RoleStore extends ResourceStore<Role> {
-        public name() {
-          return 'role';
-        }
-
         public schema: Interfaces.Schema<Role> = {
           id: Enums.SchemaType.Number,
           name: Enums.SchemaType.String,
@@ -869,10 +799,6 @@ describe(`ResourceStore`, () => {
         roles?: UserWithRoles[];
       }
       class UserWithRolesResourceStore extends ResourceStore<UserWithRoles> {
-        public name() {
-          return 'userWithRoles';
-        }
-
         public schema: Interfaces.Schema<UserWithRoles> = {
           id: Enums.SchemaType.Number,
           rolesIds: Enums.SchemaType.Object,
@@ -880,16 +806,16 @@ describe(`ResourceStore`, () => {
             type: Enums.SchemaType.Relation,
             relation: Enums.RelationType.BelongsToMany,
             sourceProperty: 'rolesIds',
-            resource: 'role',
+            resource: 'RoleStore',
           },
         };
       }
       let userWithRolesResourceStore: UserWithRolesResourceStore;
 
       beforeEach(() => {
-        userWithFriendsResourceStore = new UserWithFriendsResourceStore();
-        roleStore = new RoleStore();
-        userWithRolesResourceStore = new UserWithRolesResourceStore();
+        userWithFriendsResourceStore = new UserWithFriendsResourceStore({ skipRelationCheck: true });
+        roleStore = new RoleStore({ skipRelationCheck: true });
+        userWithRolesResourceStore = new UserWithRolesResourceStore({ skipRelationCheck: true });
       });
 
       it(`should return empty array if source field contains "nil" value`, () => {
@@ -976,10 +902,6 @@ describe(`ResourceStore`, () => {
         friend?: UserWithFriend;
       }
       class UserWithFriendResourceStore extends ResourceStore<UserWithFriend> {
-        public name() {
-          return 'userWithFriend';
-        }
-
         public schema: Interfaces.Schema<UserWithFriend> = {
           id: Enums.SchemaType.Number,
           friendId: Enums.SchemaType.Number,
@@ -987,7 +909,7 @@ describe(`ResourceStore`, () => {
             type: Enums.SchemaType.Relation,
             relation: Enums.RelationType.HasOne,
             targetProperty: 'friendId',
-            resource: 'userWithFriend',
+            resource: 'UserWithFriendResourceStore',
           },
         };
       }
@@ -999,10 +921,6 @@ describe(`ResourceStore`, () => {
         authorId: number;
       }
       class BookStore extends ResourceStore<Book> {
-        public name() {
-          return 'book';
-        }
-
         public schema: Interfaces.Schema<Book> = {
           id: Enums.SchemaType.Number,
           name: Enums.SchemaType.String,
@@ -1016,17 +934,13 @@ describe(`ResourceStore`, () => {
         book?: UserWithBook;
       }
       class UserWithBookResourceStore extends ResourceStore<UserWithBook> {
-        public name() {
-          return 'userWithBook';
-        }
-
         public schema: Interfaces.Schema<UserWithBook> = {
           id: Enums.SchemaType.Number,
           book: {
             type: Enums.SchemaType.Relation,
             relation: Enums.RelationType.HasOne,
             targetProperty: 'authorId',
-            resource: 'book',
+            resource: 'BookStore',
           },
         };
       }
@@ -1037,10 +951,10 @@ describe(`ResourceStore`, () => {
       beforeEach(() => {
         relationMap.clear();
 
-        userWithFriendResourceStore = new UserWithFriendResourceStore();
-        bookStore = new BookStore();
+        userWithFriendResourceStore = new UserWithFriendResourceStore({ skipRelationCheck: true });
+        bookStore = new BookStore({ skipRelationCheck: true });
 
-        userWithBookResourceStore = new UserWithBookResourceStore();
+        userWithBookResourceStore = new UserWithBookResourceStore({ skipRelationCheck: true });
       });
 
       it(`should return "null" if source field contains "nil" value`, () => {
@@ -1105,10 +1019,6 @@ describe(`ResourceStore`, () => {
         friends?: UserWithFriends[];
       }
       class UserWithFriendsResourceStore extends ResourceStore<UserWithFriends> {
-        public name() {
-          return 'userWithFriends';
-        }
-
         public schema: Interfaces.Schema<UserWithFriends> = {
           id: Enums.SchemaType.Number,
           friendId: Enums.SchemaType.Number,
@@ -1116,7 +1026,7 @@ describe(`ResourceStore`, () => {
             type: Enums.SchemaType.Relation,
             relation: Enums.RelationType.HasMany,
             targetProperty: 'friendId',
-            resource: 'userWithFriends',
+            resource: 'UserWithFriendsResourceStore',
           },
         };
       }
@@ -1128,10 +1038,6 @@ describe(`ResourceStore`, () => {
         authorId: number;
       }
       class BookStore extends ResourceStore<Book> {
-        public name() {
-          return 'book';
-        }
-
         public schema: Interfaces.Schema<Book> = {
           id: Enums.SchemaType.Number,
           name: Enums.SchemaType.String,
@@ -1145,28 +1051,24 @@ describe(`ResourceStore`, () => {
         books?: UserWithBooks[];
       }
       class UserWithRolesResourceStore extends ResourceStore<UserWithBooks> {
-        public name() {
-          return 'userWithBooks';
-        }
-
         public schema: Interfaces.Schema<UserWithBooks> = {
           id: Enums.SchemaType.Number,
           books: {
             type: Enums.SchemaType.Relation,
             relation: Enums.RelationType.HasMany,
             targetProperty: 'authorId',
-            resource: 'book',
+            resource: 'BookStore',
           },
         };
       }
       let userWithBooksResourceStore: UserWithRolesResourceStore;
 
       beforeEach(() => {
-        userWithFriendsResourceStore = new UserWithFriendsResourceStore();
+        userWithFriendsResourceStore = new UserWithFriendsResourceStore({ skipRelationCheck: true });
 
-        bookStore = new BookStore();
+        bookStore = new BookStore({ skipRelationCheck: true });
 
-        userWithBooksResourceStore = new UserWithRolesResourceStore();
+        userWithBooksResourceStore = new UserWithRolesResourceStore({ skipRelationCheck: true });
       });
 
       it(`should return empty array if relations not found in the empty related store for one store`, () => {
@@ -1262,15 +1164,11 @@ describe(`ResourceStore`, () => {
       id: number;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name() {
-        return 'user';
-      }
-
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
       };
     }
-    const userResourceStore = new UserResourceStore();
+    const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
     userResourceStore.inject({ id: 1 });
     userResourceStore.inject({ id: 2 });
 
@@ -1305,10 +1203,6 @@ describe(`ResourceStore`, () => {
       createdAt: Date;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name() {
-        return 'user';
-      }
-
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
         firstName: Enums.SchemaType.String,
@@ -1318,7 +1212,7 @@ describe(`ResourceStore`, () => {
         createdAt: Enums.SchemaType.Date,
       };
     }
-    const userResourceStore = new UserResourceStore();
+    const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
     const user1 = userResourceStore.inject({
       id: 1,
       firstName: 'Andrey',
@@ -1368,10 +1262,6 @@ describe(`ResourceStore`, () => {
       createdAt: Date;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name() {
-        return 'user';
-      }
-
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
         firstName: Enums.SchemaType.String,
@@ -1381,7 +1271,7 @@ describe(`ResourceStore`, () => {
         createdAt: Enums.SchemaType.Date,
       };
     }
-    const userResourceStore = new UserResourceStore();
+    const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
     const user1 = userResourceStore.inject({
       id: 1,
       firstName: 'Andrey',
@@ -1429,15 +1319,11 @@ describe(`ResourceStore`, () => {
       id: number;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name() {
-        return 'user';
-      }
-
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
       };
     }
-    const userResourceStore = new UserResourceStore();
+    const userResourceStore = new UserResourceStore({ skipRelationCheck: true });
     const user1 = userResourceStore.inject({ id: 1 });
     userResourceStore.inject({ id: 2 });
 
@@ -1450,7 +1336,7 @@ describe(`ResourceStore`, () => {
       }
 
       expect(testError).not.to.be.undefined;
-      expect(testError.message).to.be.equal(`ResourceStore.removeById: "id" must be a string or number.`);
+      expect(testError.message).to.be.equal(`ResourceStore.removeById: "id" must be a string or number`);
     });
 
     it(`should return "null" and not remove anything if resource not found`, () => {
@@ -1478,10 +1364,6 @@ describe(`ResourceStore`, () => {
       createdAt: Date;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name() {
-        return 'user';
-      }
-
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
         firstName: Enums.SchemaType.String,
@@ -1494,7 +1376,7 @@ describe(`ResourceStore`, () => {
     let userResourceStore: UserResourceStore;
 
     beforeEach(() => {
-      userResourceStore = new UserResourceStore();
+      userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       userResourceStore.inject({
         id: 1,
         firstName: 'Andrey',
@@ -1522,7 +1404,7 @@ describe(`ResourceStore`, () => {
     });
 
     it(`should return empty array if store is empty`, () => {
-      userResourceStore = new UserResourceStore();
+      userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       const users = userResourceStore.remove({
         age: 25,
       });
@@ -1572,10 +1454,6 @@ describe(`ResourceStore`, () => {
       firstName: string;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name() {
-        return 'user';
-      }
-
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
         firstName: Enums.SchemaType.String,
@@ -1587,7 +1465,7 @@ describe(`ResourceStore`, () => {
 
     beforeEach(() => {
       subManager.destroy();
-      userResourceStore = new UserResourceStore();
+      userResourceStore = new UserResourceStore({ skipRelationCheck: true });
     });
 
     it(`shouldn't call subsciption callback if resource is injected before subscription`, (done) => {
@@ -1716,10 +1594,6 @@ describe(`ResourceStore`, () => {
       firstName: string;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name() {
-        return 'user';
-      }
-
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
         firstName: Enums.SchemaType.String,
@@ -1731,7 +1605,7 @@ describe(`ResourceStore`, () => {
 
     beforeEach(() => {
       subManager.destroy();
-      userResourceStore = new UserResourceStore();
+      userResourceStore = new UserResourceStore({ skipRelationCheck: true });
       userResourceStore.inject({
         id: 1,
         firstName: 'Andrey',
@@ -1806,10 +1680,6 @@ describe(`ResourceStore`, () => {
       firstName: string;
     }
     class UserResourceStore extends ResourceStore<User> {
-      public name() {
-        return 'user';
-      }
-
       public schema: Interfaces.Schema<User> = {
         id: Enums.SchemaType.Number,
         firstName: Enums.SchemaType.String,
@@ -1818,7 +1688,7 @@ describe(`ResourceStore`, () => {
     let userResourceStore: UserResourceStore;
 
     beforeEach(() => {
-      userResourceStore = new UserResourceStore();
+      userResourceStore = new UserResourceStore({ skipRelationCheck: true });
     });
 
     it(`should increase the size of store after 'inject' operation`, () => {

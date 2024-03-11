@@ -1,3 +1,4 @@
+import defaults from 'lodash/defaults';
 import every from 'lodash/every';
 import find from 'lodash/find';
 import findIndex from 'lodash/findIndex';
@@ -8,4 +9,4 @@ import filter from 'lodash/filter';
 import isEmpty from 'lodash/isEmpty';
 import includes from 'lodash/includes';
 
-export { every, find, includes, findIndex, filter, isNil, isEmpty, has, map };
+export { every, defaults, find, includes, findIndex, filter, isNil, isEmpty, has, map };

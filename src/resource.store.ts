@@ -11,6 +11,7 @@ import {
   Schema,
   SchemaField,
   SimpleSchemaField,
+  StoreOptions,
   WhereConditions,
 } from './shared/interfaces';
 
@@ -18,9 +19,8 @@ export abstract class ResourceStore<ResourceType extends BaseResource> {
   /**
    * Store name.
    */
-  public name(): string {
-    throw new Error(`Name is required`);
-  }
+  private name: string;
+
   /**
    * Store name.
    */
@@ -46,10 +46,17 @@ export abstract class ResourceStore<ResourceType extends BaseResource> {
 
   private whereFilterHelper: WhereFilterHelper;
 
-  constructor() {
+  constructor(options?: StoreOptions) {
     this.store = [];
 
-    ResourceStore.relationMap.set(this.name(), this);
+    const DefaultOptions: StoreOptions = { skipRelationCheck: false, name: this.constructor.name };
+    const optionsWithDefault = _.defaults(options ?? {}, DefaultOptions);
+    this.name = optionsWithDefault.name;
+    if (!optionsWithDefault.skipRelationCheck && ResourceStore.relationMap.has(this.name)) {
+      throw new Error(`Resource (${this.name}) is already registered`);
+    }
+
+    ResourceStore.relationMap.set(this.name, this);
     this.sjInjectResourcesNotifMap = new Map();
 
     this.sjInjectNotif = new Subject();
@@ -165,11 +172,11 @@ export abstract class ResourceStore<ResourceType extends BaseResource> {
    */
   private injectOne(resource: ResourceType): ResourceType {
     if (!this.hasUniqKeys(resource)) {
-      throw new Error(`ResourceStore.injectOne: Resource must have uniq key (${this.uniqKeys.join(', ')}).`);
+      throw new Error(`Resource (${this.name}) must have uniq key (${this.uniqKeys.join(', ')})`);
     }
 
     if (!this.hasValidUniqKeys(resource)) {
-      throw new Error(`ResourceStore.injectOne: Uniq key (${this.uniqKeys.join(', ')}) must be a string or number.`);
+      throw new Error(`Uniq key (${this.uniqKeys.join(', ')}) must be a string or number in resource (${this.name})`);
     }
 
     const oldResourceIndex = _.findIndex(this.store, this.buildSearchObject(resource));
@@ -199,7 +206,7 @@ export abstract class ResourceStore<ResourceType extends BaseResource> {
   removeById(id: string | number): ResourceType {
     const idType = typeof id;
     if (idType !== 'string' && idType !== 'number') {
-      throw new Error(`ResourceStore.removeById: "id" must be a string or number.`);
+      throw new Error(`ResourceStore.removeById: "id" must be a string or number`);
     }
 
     const resourceIndex = _.findIndex(this.store, ['id', id]);
